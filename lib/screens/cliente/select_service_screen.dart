@@ -20,7 +20,7 @@ class _SeleccionarServicioState extends State<SeleccionarServicio> {
   final Set<Service> _selectedServices = {};
   double _precioTotal = 0.0;
   bool _vehiculosDisponibles = true;
-  DateTime? _selectedDate; // Variable para almacenar la fecha seleccionada
+  String? _reservationId; // Variable para almacenar el reservationId
 
   @override
   void initState() {
@@ -134,29 +134,36 @@ class _SeleccionarServicioState extends State<SeleccionarServicio> {
     );
   }
 
-Widget _buildCalendarButton() {
-  return Container(
-    alignment: Alignment.centerLeft,
-    child: ElevatedButton(
-      onPressed: () async {
-        final selectedDate = await Navigator.push<DateTime?>(
-          context,
-          MaterialPageRoute(
-              builder: (context) => RepairRequestCalendar(
-                    onDateTimeSelected: handleDateSelected,
-                  )),
-        );
+  Widget _buildCalendarButton() {
+    return Container(
+      alignment: Alignment.centerLeft,
+      child: ElevatedButton(
+        onPressed: () async {
+          final reservationId = await Navigator.push<String?>(
+            context,
+            MaterialPageRoute(
+                builder: (context) => RepairRequestCalendar(
+                      onReservationIdSelected: handleReservationIdSelected,
+                    )),
+          );
 
-        if (selectedDate != null) {
-          setState(() {
-            _selectedDate = selectedDate;
-          });
-        }
-      },
-      child: const Text('Seleccionar fecha'),
-    ),
-  );
-}
+          if (reservationId != null) {
+            setState(() {
+              _reservationId = reservationId;
+            });
+          }
+        },
+        child: const Text('Seleccionar fecha'),
+      ),
+    );
+  }
+
+  void handleReservationIdSelected(String reservationId) {
+    setState(() {
+      _reservationId = reservationId;
+    });
+  }
+
   Widget _buildTotalPrice() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -172,7 +179,7 @@ Widget _buildCalendarButton() {
       child: ElevatedButton(
         onPressed: () {
           if (_vehiculoSeleccionado != null &&
-              _selectedDate != null &&
+              _reservationId != null &&
               _selectedServices.isNotEmpty) {
             _createTurn(); // Llamar a la función para crear el turno
           } else {
@@ -198,18 +205,13 @@ Widget _buildCalendarButton() {
     return snapshot.docs.map((doc) => Vehicle.fromFirestore(doc)).toList();
   }
 
-  void handleDateSelected(DateTime selectedDate) {
-    setState(() {
-      _selectedDate = selectedDate;
-    });
-  }
-
   Future<void> _createTurn() async {
     String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     String vehicleId = _vehiculoSeleccionado?.id ?? '';
+    
     List<String> serviceIds = _selectedServices.map((s) => s.id).toList();
 
-    if (userId.isEmpty || vehicleId.isEmpty || serviceIds.isEmpty || _selectedDate == null) {
+    if (userId.isEmpty || vehicleId.isEmpty || serviceIds.isEmpty || _reservationId == null) {
       return;
     }
 
@@ -217,7 +219,7 @@ Widget _buildCalendarButton() {
       'userId': userId,
       'vehicleId': vehicleId,
       'services': serviceIds,
-      'ingreso': _selectedDate, // Utiliza la fecha seleccionada sin modificar
+      'reservationId': _reservationId, // Utiliza el reservationId en lugar de la fecha
       'state': 'pendiente',
       'totalPrice': _precioTotal,
     });
@@ -236,5 +238,4 @@ Widget _buildCalendarButton() {
       ),
     );
   }
-
 }

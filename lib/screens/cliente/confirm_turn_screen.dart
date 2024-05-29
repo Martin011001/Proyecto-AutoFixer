@@ -10,7 +10,6 @@ class ConfirmTurnScreen extends StatelessWidget {
 
   ConfirmTurnScreen({required this.turnId});
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,8 +31,7 @@ class ConfirmTurnScreen extends StatelessWidget {
 
           var data = snapshot.data!.data() as Map<String, dynamic>;
           var vehicleId = data['vehicleId'];
-          var ingreso = (data['ingreso'] as Timestamp).toDate();
-          var formattedDate = DateFormat('dd-MM-yyyy HH:mm').format(ingreso);
+          var reservationId = data['reservationId'];
           var serviceIds = data['services'] as List<dynamic>;
 
           return FutureBuilder<DocumentSnapshot>(
@@ -53,74 +51,91 @@ class ConfirmTurnScreen extends StatelessWidget {
 
               var vehicleData = vehicleSnapshot.data!.data() as Map<String, dynamic>;
 
-    return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Vehículo: ${vehicleData['brand']} ${vehicleData['model']} (${vehicleData['year']})',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Estado: ${data['state']}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Fecha de ingreso: $formattedDate',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Precio total: ${data['totalPrice']}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Servicios:',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    ...serviceIds.map((serviceId) {
-                      var service = services.firstWhere((s) => s.id == serviceId);
-                      return Center(
-                        child: Text('${service.nombre} - \$${service.precio}'),
-                      );
-                    }).toList(),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () async {
-                        await FirebaseFirestore.instance.collection('turns').doc(turnId).update({
-                          'confirm': true,
-                        });
-                        String formattedDatefinal = "${ingreso.year}-${ingreso.month}-${ingreso.day}";
-                        String formattedTime = "${ingreso.hour}:${ingreso.minute.toString().padLeft(2, '0')}";
-                        DocumentReference docRef = FirebaseFirestore.instance
-                            .collection('reservations')
-                            .doc(formattedDatefinal)
-                            .collection('times')
-                            .doc(formattedTime);
+              return FutureBuilder<DocumentSnapshot>(
+                future: _fetchReservationDate(reservationId),
+                builder: (context, reservationSnapshot) {
+                  if (reservationSnapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                        await docRef.set({
-                          'time': formattedTime,
-                          'reserved': true,
-                          'user_id': FirebaseAuth.instance.currentUser?.uid,
-                        });
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => ThankYouScreen()),
-                        );
-                      },
-                      child: const Text('Confirmar'),
+                  if (reservationSnapshot.hasError) {
+                    print('Error al cargar los datos de la reserva: ${reservationSnapshot.error}');
+                    return const Center(child: Text('Error al cargar los datos de la reserva.'));
+                  }
+
+                  if (!reservationSnapshot.hasData || !reservationSnapshot.data!.exists) {
+                    print('Reserva no encontrada para reservationId: $reservationId');
+                    return const Center(child: Text('Reserva no encontrada.'));
+                  }
+
+                  var reservationData = reservationSnapshot.data!.data() as Map<String, dynamic>;
+                  var reservationDateTime = (reservationData['date'] as Timestamp).toDate();
+                  var formattedDate = DateFormat('dd-MM-yyyy HH:mm').format(reservationDateTime);
+
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Vehículo: ${vehicleData['brand']} ${vehicleData['model']} (${vehicleData['year']})',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Estado: ${data['state']}',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Fecha de ingreso: $formattedDate',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Precio total: ${data['totalPrice']}',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Servicios:',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        ...serviceIds.map((serviceId) {
+                          var service = services.firstWhere((s) => s.id == serviceId);
+                          return Center(
+                            child: Text('${service.nombre} - \$${service.precio}'),
+                          );
+                        }).toList(),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () async {
+                            await FirebaseFirestore.instance.collection('turns').doc(turnId).update({
+                              'confirm': true,
+                            });
+
+                            // Actualiza la reserva para marcarla como reservada
+                            await FirebaseFirestore.instance.collection('reservations').doc(reservationId).update({
+                              'reserved': true,
+                              'user_id': FirebaseAuth.instance.currentUser?.uid,
+                            });
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => ThankYouScreen()),
+                            );
+                          },
+                          child: const Text('Confirmar'),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               );
             },
           );
@@ -128,6 +143,10 @@ class ConfirmTurnScreen extends StatelessWidget {
       ),
     );
   }
+
+  Future<DocumentSnapshot> _fetchReservationDate(String reservationId) async {
+    // Acceder al documento en Firestore usando el reservationId directamente
+    var docRef = FirebaseFirestore.instance.collection('reservations').doc(reservationId);
+    return docRef.get();
+  }
 }
-
-

@@ -14,7 +14,7 @@ class TurnosScreen extends StatefulWidget {
 
 class _TurnosScreenState extends State<TurnosScreen> {
   String? selectedState;
-  final List<String> states = ['pending', 'confirm', 'in_progress', 'done'];
+  final List<String> states = ['pending', 'confirm', 'in progress', 'done'];
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +67,7 @@ class _TurnosScreenState extends State<TurnosScreen> {
                 return _ListTurnView(
                   turns: filteredTurns,
                   selectedState: selectedState,
+                  getStateTitle: _getStateTitle,
                 );
               },
             ),
@@ -82,7 +83,7 @@ class _TurnosScreenState extends State<TurnosScreen> {
         return 'Turnos Pendientes';
       case 'confirm':
         return 'Turnos Confirmados';
-      case 'in_progress':
+      case 'in progress':
         return 'Turnos en Progreso';
       case 'done':
         return 'Turnos Completados';
@@ -95,8 +96,13 @@ class _TurnosScreenState extends State<TurnosScreen> {
 class _ListTurnView extends StatelessWidget {
   final List<Turn> turns;
   final String? selectedState;
+  final Function(String) getStateTitle;
 
-  const _ListTurnView({required this.turns, required this.selectedState});
+  const _ListTurnView({
+    required this.turns,
+    required this.selectedState,
+    required this.getStateTitle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +112,7 @@ class _ListTurnView extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              _getStateTitle(selectedState!),
+              getStateTitle(selectedState!),
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
@@ -114,21 +120,6 @@ class _ListTurnView extends StatelessWidget {
         if (turns.isNotEmpty) const Divider(),
       ],
     );
-  }
-
-  String _getStateTitle(String state) {
-    switch (state) {
-      case 'pending':
-        return 'Turnos Pendientes';
-      case 'confirm':
-        return 'Turnos Confirmados';
-      case 'in_progress':
-        return 'Turnos en Progreso';
-      case 'done':
-        return 'Turnos Completados';
-      default:
-        return '';
-    }
   }
 }
 

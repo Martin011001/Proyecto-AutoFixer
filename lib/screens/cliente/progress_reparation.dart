@@ -1,10 +1,11 @@
+import 'package:aplicacion_taller/entities/info_cliente_turn_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:aplicacion_taller/entities/turn.dart';
 
 class VerProgresoReparaciones extends StatelessWidget {
-  final Turn turn;
+  final TurnDetails turnDetails;
 
-  const VerProgresoReparaciones({Key? key, required this.turn})
+  const VerProgresoReparaciones({Key? key, required this.turnDetails})
       : super(key: key);
 
   @override
@@ -13,30 +14,53 @@ class VerProgresoReparaciones extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Progreso del Turno'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('ID del Turno: ${turn.id}',
-                style: const TextStyle(fontSize: 18)),
-            Text('Estado: ${turn.state}',
-                style: const TextStyle(fontSize: 18)),
-            Text(
-                'Servicios: ${_getServiceNames(turn.services)}',
-                style: const TextStyle(fontSize: 18)),
-            Text('ID del Vehículo: ${turn.vehicleId}',
-                style: const TextStyle(fontSize: 18)),
-            Text('ID del Cliente: ${turn.userId}',
-                style: const TextStyle(fontSize: 18)),
-            // Aquí puedes añadir más información sobre el progreso del turno
-          ],
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('Vehículo: ${turnDetails.vehicleBrand} ${turnDetails.vehicleModel}',
+                  style: const TextStyle(fontSize: 18)),
+              Text('Fecha de ingreso: ${turnDetails.formattedDate}',
+                  style: const TextStyle(fontSize: 18)),
+              Text('Estado del turno: ${turnDetails.turnState}',
+                  style: const TextStyle(fontSize: 18)),
+              const SizedBox(height: 20),
+              _buildProgressIndicator(turnDetails.turnState),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  String _getServiceNames(List<String> services) {
-    return services.join(', ');
+  Widget _buildProgressIndicator(String state) {
+    double progress = 0.0;
+
+    switch (state) {
+      case 'pending':
+        progress = 0.25;
+        break;
+      case 'confirm':
+        progress = 0.50;
+        break;
+      case 'in progress':
+        progress = 0.75;
+        break;
+      case 'done':
+        progress = 1.0;
+        break;
+    }
+
+    return SizedBox(
+      height: 20, // Altura personalizada del LinearProgressIndicator
+      child: LinearProgressIndicator(
+        value: progress,
+        backgroundColor: Colors.grey[300],
+        valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+      ),
+    );
   }
 }

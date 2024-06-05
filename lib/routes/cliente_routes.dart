@@ -1,4 +1,6 @@
+import 'package:aplicacion_taller/entities/info_cliente_turn_progress.dart';
 import 'package:aplicacion_taller/screens/cliente/EditCliente.dart';
+import 'package:aplicacion_taller/screens/cliente/progress_reparation.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:aplicacion_taller/screens/cliente/home_screen.dart';
@@ -74,5 +76,9 @@ final clienteRoutes = [
    GoRoute(
     path: '/cliente/editar/perfil',
     builder: (context, state) => const EditUserScreen(),
+  ),
+  GoRoute(
+    path: '/cliente/turn-progress',
+    builder: (context, state) => VerProgresoReparaciones(turnDetails: state.extra as TurnDetails),
   ),
 ];

@@ -1,8 +1,8 @@
+import 'package:aplicacion_taller/entities/info_cliente_turn_progress.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'
-    as firebase_auth; // Alias para FirebaseAuth
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:aplicacion_taller/entities/turn.dart';
 
@@ -17,7 +17,7 @@ class ReparationHistoryScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Historial de Reparaciones'),
       ),
-      body: StreamBuilder<firebase_auth.User?>(
+      body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, authSnapshot) {
           if (authSnapshot.connectionState == ConnectionState.waiting) {
@@ -49,7 +49,20 @@ class ReparationHistoryScreen extends StatelessWidget {
                 return const Center(child: Text('No hay turnos disponibles'));
               }
 
-              return _ListTurnView(turns: turns);
+              List<Turn> inProgressTurns = turns
+                  .where((turn) =>
+                      turn.state == 'pending' ||
+                      turn.state == 'confirm' ||
+                      turn.state == 'in progress')
+                  .toList();
+
+              List<Turn> doneTurns =
+                  turns.where((turn) => turn.state == 'done').toList();
+
+              return _ListTurnView(
+                inProgressTurns: inProgressTurns,
+                doneTurns: doneTurns,
+              );
             },
           );
         },
@@ -59,18 +72,41 @@ class ReparationHistoryScreen extends StatelessWidget {
 }
 
 class _ListTurnView extends StatelessWidget {
-  final List<Turn> turns;
+  final List<Turn> inProgressTurns;
+  final List<Turn> doneTurns;
 
-  const _ListTurnView({required this.turns});
+  const _ListTurnView({
+    required this.inProgressTurns,
+    required this.doneTurns,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: turns.length,
-      itemBuilder: (context, index) {
-        final turn = turns[index];
-        return _TurnItem(turn: turn);
-      },
+    return ListView(
+      children: [
+        if (inProgressTurns.isNotEmpty) ...[
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'Turnos en Progreso',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          ...inProgressTurns.map((turn) => _TurnItem(turn: turn)).toList(),
+          const Divider(),
+        ],
+        if (doneTurns.isNotEmpty) ...[
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'Turnos Finalizados',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          ...doneTurns.map((turn) => _TurnItem(turn: turn)).toList(),
+          const Divider(),
+        ],
+      ],
     );
   }
 }
@@ -82,7 +118,8 @@ class _TurnItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String formattedDate = DateFormat('dd MMM yyyy, hh:mm a').format(turn.ingreso);
+    String formattedDate =
+        DateFormat('dd MMM yyyy, hh:mm a').format(turn.ingreso);
 
     return FutureBuilder<Map<String, dynamic>>(
       future: _getUserDetails(turn.userId),
@@ -123,15 +160,20 @@ class _TurnItem extends StatelessWidget {
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Cliente: $userName'), // Mostrar el nombre del cliente
-                    Text('Marca del vehículo: $vehicleBrand'),
-                    Text('Modelo del vehículo: $vehicleModel'),
+                    Text('Vehículo: $vehicleBrand $vehicleModel'),
                     Text('Fecha de ingreso: $formattedDate'),
                     Text('Estado del turno: ${turn.state}'),
                   ],
                 ),
                 onTap: () {
-                  // context.push('/cliente/reparation-progress');
+                  context.push('/cliente/turn-progress',
+                      extra: TurnDetails(
+                        userName: userName,
+                        vehicleBrand: vehicleBrand,
+                        vehicleModel: vehicleModel,
+                        ingreso: turn.ingreso,
+                        turnState: turn.state,
+                      ));
                 },
               ),
             );

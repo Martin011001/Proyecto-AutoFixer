@@ -13,6 +13,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
+  final _diasAproximadosController = TextEditingController();
 
   @override
   void dispose() {
@@ -33,6 +34,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
         id: docRef.id,
         name: _nameController.text,
         price: double.parse(_priceController.text),
+        diasAproximados: int.parse(_diasAproximadosController.text),
       );
 
       // Guardar el servicio en Firestore
@@ -77,6 +79,20 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
                     return 'Please enter a price';
                   }
                   if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _diasAproximadosController,
+                decoration: const InputDecoration(labelText: 'Dias aproximados'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter dia aproximado';
+                  }
+                  if (int.tryParse(value) == null) {
                     return 'Please enter a valid number';
                   }
                   return null;

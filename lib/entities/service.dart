@@ -4,11 +4,13 @@ class Service {
   final String id;
   final String name;
   final double price;
+  final int diasAproximados;
 
   Service({
     required this.id,
     required this.name,
     required this.price,
+    required this.diasAproximados,
   });
 
   factory Service.fromFirestore(DocumentSnapshot doc) {
@@ -17,6 +19,7 @@ class Service {
       id: doc.id,
       name: data['name'] ?? '',
       price: data['price'] ?? 0.0,
+      diasAproximados: data['diasAproximados'] ?? 0
     );
   }
 
@@ -24,6 +27,7 @@ class Service {
     return {
       'name': name,
       'price': price,
+      'diasAproximados': diasAproximados,
     };
   }
 }

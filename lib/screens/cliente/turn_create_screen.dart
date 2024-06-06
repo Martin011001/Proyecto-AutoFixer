@@ -50,6 +50,19 @@ class _TurnCreateState extends State<TurnCreate> {
         0.0, (total, service) => total + service.price);
   }
 
+  DateTime _getEgresoEstimado(DateTime ingreso) {
+    int totalDias = 0;
+
+    for (var service in _selectedServices) {
+      totalDias += service.diasAproximados;
+    }
+
+    // Sumar el total de días a la fecha de ingreso
+    DateTime egresoEstimado = ingreso.add(Duration(days: totalDias));
+
+    return egresoEstimado;
+  }
+
   bool _isSubmitEnabled() {
     bool isVehicleSelected = _selectedVehicle != null;
     bool isServiceSelected = _selectedServices.isNotEmpty;
@@ -95,13 +108,13 @@ class _TurnCreateState extends State<TurnCreate> {
     );
 
     final newTurn = Turn(
-      userId: FirebaseAuth.instance.currentUser?.uid ?? '',
-      vehicleId: _selectedVehicle!.id,
-      services: _selectedServices.map((service) => service.id).toList(),
-      ingreso: ingreso,
-      state: 'pending',
-      totalPrice: _getSubtotal(),
-    );
+        userId: FirebaseAuth.instance.currentUser?.uid ?? '',
+        vehicleId: _selectedVehicle!.id,
+        services: _selectedServices.map((service) => service.id).toList(),
+        ingreso: ingreso,
+        state: 'pending',
+        totalPrice: _getSubtotal(),
+        egreso: _getEgresoEstimado(ingreso));
 
     try {
       await FirebaseFirestore.instance

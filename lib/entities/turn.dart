@@ -8,6 +8,7 @@ class Turn {
   final DateTime ingreso; // Cambiado el nombre del campo date a ingreso
   final String state;
   final double totalPrice; // Agregado el campo totalPrice
+  final DateTime egreso;
 
   Turn({
     this.id,
@@ -17,6 +18,7 @@ class Turn {
     required this.ingreso,
     required this.state,
     required this.totalPrice,
+    required this.egreso
   });
 
   factory Turn.fromFirestore(DocumentSnapshot doc) {
@@ -30,6 +32,8 @@ class Turn {
           DateTime.now(), // Manejar el caso nulo
       state: data['state'] ?? '',
       totalPrice: (data['totalPrice'] as num?)?.toDouble() ?? 0.0,
+      egreso: (data['engreso'] as Timestamp?)?.toDate() ??
+          DateTime.now(), // Manejar el caso nulo
     );
   }
 
@@ -40,7 +44,8 @@ class Turn {
       'services': services, // Agregado el campo services
       'ingreso': ingreso, // Cambiado el nombre del campo date a ingreso
       'state': state,
-      'totalPrice': totalPrice, // Agregado el campo totalPrice
+      'totalPrice': totalPrice,
+      'egreso': egreso, // Agregado el campo totalPrice
     };
   }
 }

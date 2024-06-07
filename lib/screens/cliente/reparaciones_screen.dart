@@ -44,6 +44,7 @@ class ReparationHistoryScreen extends StatelessWidget {
               final data = snapshot.requireData;
               List<Turn> turns =
                   data.docs.map((doc) => Turn.fromFirestore(doc)).toList();
+                  print(data);
 
               if (turns.isEmpty) {
                 return const Center(child: Text('No hay turnos disponibles'));
@@ -118,9 +119,10 @@ class _TurnItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String formattedDate =
+    String formattedInDate =
         DateFormat('dd MMM yyyy, hh:mm a').format(turn.ingreso);
-
+    String formattedOutDate =
+        DateFormat('dd MMM yyyy, hh:mm a').format(turn.egreso);
     return FutureBuilder<Map<String, dynamic>>(
       future: _getUserDetails(turn.userId),
       builder: (context, userSnapshot) {
@@ -161,8 +163,9 @@ class _TurnItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Vehículo: $vehicleBrand $vehicleModel'),
-                    Text('Fecha de ingreso: $formattedDate'),
+                    Text('Fecha de ingreso: $formattedInDate'),
                     Text('Estado del turno: ${turn.state}'),
+                    Text('Fecha de retiro aproximada: $formattedOutDate'),
                   ],
                 ),
                 onTap: () {

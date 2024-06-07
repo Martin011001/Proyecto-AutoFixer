@@ -32,7 +32,7 @@ class Turn {
           DateTime.now(), // Manejar el caso nulo
       state: data['state'] ?? '',
       totalPrice: (data['totalPrice'] as num?)?.toDouble() ?? 0.0,
-      egreso: (data['engreso'] as Timestamp?)?.toDate() ??
+      egreso: (data['egreso'] as Timestamp?)?.toDate() ??
           DateTime.now(), // Manejar el caso nulo
     );
   }

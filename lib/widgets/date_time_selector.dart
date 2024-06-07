@@ -115,8 +115,8 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
       title: Row(
         children: [
           Text(selectedDate == null
-              ? 'Select date'
-              : 'Selected date: ${DateFormat('yyyy-MM-dd').format(selectedDate!)}'),
+              ? 'Seleccionar fecha'
+              : 'Fecha seleccionada: ${DateFormat('yyyy-MM-dd').format(selectedDate!)}'),
           SizedBox(width: 10), // Add some spacing
           if (businessHours != null && selectedDate != null)
             _buildBusinessHoursIndicator(selectedDate!),
@@ -156,7 +156,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Select Hour'),
+          title: const Text('Seleccionar hora'),
           content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(
@@ -270,8 +270,8 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
           final availableTimes = snapshot.data ?? [];
           return ListTile(
             title: Text(selectedHour == null
-                ? 'Select hour'
-                : 'Selected hour: $selectedHour'),
+                ? 'Seleccionar hora'
+                : 'Hora seleccionada: $selectedHour'),
             trailing: Icon(Icons.access_time,
                 color: selectedDate == null
                     ? Colors.grey
@@ -297,7 +297,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
   Widget build(BuildContext context) {
     return ExpansionTile(
       title: const Text(
-        'Select date and time',
+        'Seleccionar hora y fecha',
         style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
       ),
       initiallyExpanded: true,
@@ -306,7 +306,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              title: Text('Business Hours'),
+              title: Text('Horas de negocio'),
               trailing: const Icon(Icons.store),
               onTap: () {
                 _showBusinessHoursDialog(context);

@@ -63,12 +63,12 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'Service Name: ${service.name}',
+                    'Nombre servicio: ${service.name}',
                     style: const TextStyle(fontSize: 18),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Price: \$${service.price.toStringAsFixed(2)}',
+                    'Precio: \$${service.price.toStringAsFixed(2)}',
                     style: const TextStyle(fontSize: 18),
                   ),
                   const SizedBox(height: 20),
@@ -79,13 +79,13 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                         onPressed: () {
                           // Acción para editar
                         },
-                        child: const Text('Edit'),
+                        child: const Text('Editar'),
                       ),
                       const SizedBox(width: 10),
                       ElevatedButton(
                           onPressed: () => eliminarServicio(context),
                         // ignore: sort_child_properties_last
-                        child: const Text('Delete'),
+                        child: const Text('Eliminar'),
                       ),
                     ],
                   ),

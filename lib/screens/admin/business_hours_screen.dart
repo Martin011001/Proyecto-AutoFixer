@@ -11,13 +11,13 @@ class BusinessHoursScreen extends StatefulWidget {
 class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final Map<String, bool> _openDays = {
-    'Monday': false,
-    'Tuesday': false,
-    'Wednesday': false,
-    'Thursday': false,
-    'Friday': false,
-    'Saturday': false,
-    'Sunday': false,
+    'Lunes': false,
+    'Martes': false,
+    'Miercoles': false,
+    'Jueves': false,
+    'Viernes': false,
+    'Sabado': false,
+    'Doimingo': false,
   };
 
   final Map<String, TimeOfDay?> _openingTimes = {};
@@ -159,14 +159,14 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
                       onPressed: () => _pickTime(day, true),
                       child: Text(_openingTimes[day] != null
                           ? _timeOfDayToString(_openingTimes[day]!)
-                          : 'Set Opening Time'),
+                          : 'Establecer horario apertura'),
                     ),
                     Text('-'),
                     TextButton(
                       onPressed: () => _pickTime(day, false),
                       child: Text(_closingTimes[day] != null
                           ? _timeOfDayToString(_closingTimes[day]!)
-                          : 'Set Closing Time'),
+                          : 'Establecer horario cierre'),
                     ),
                   ],
                 ),
@@ -181,7 +181,7 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Business Hours'),
+        title: const Text('Horas de negocio'),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())

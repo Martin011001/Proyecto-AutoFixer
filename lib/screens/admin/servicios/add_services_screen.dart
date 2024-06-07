@@ -2,8 +2,6 @@ import 'package:aplicacion_taller/entities/service.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-
 class AddServiceScreen extends StatefulWidget {
   @override
   _AddServiceScreenState createState() => _AddServiceScreenState();
@@ -19,6 +17,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
   void dispose() {
     _nameController.dispose();
     _priceController.dispose();
+    _diasAproximadosController.dispose();
     super.dispose();
   }
 
@@ -42,7 +41,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
 
       // Mostrar un mensaje de éxito y regresar a la pantalla anterior
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Service added successfully!')),
+        const SnackBar(content: Text('Servicio agregado exitosamente')),
       );
       Navigator.of(context).pop();
     }
@@ -52,7 +51,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Service'),
+        title: const Text('Agregar Servicio'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -62,38 +61,42 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Service Name'),
+                decoration: const InputDecoration(labelText: 'Nombre del Servicio'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a service name';
+                    return 'Por favor, ingrese el nombre del servicio';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _priceController,
-                decoration: const InputDecoration(labelText: 'Price'),
+                decoration: const InputDecoration(labelText: 'Precio'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a price';
+                    return 'Por favor, ingrese un precio';
                   }
                   if (double.tryParse(value) == null) {
-                    return 'Please enter a valid number';
+                    return 'Por favor, ingrese un número válido';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _diasAproximadosController,
-                decoration: const InputDecoration(labelText: 'Dias aproximados'),
+                decoration: const InputDecoration(labelText: 'Días aproximados'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter dia aproximado';
+                    return 'Por favor, ingrese los días aproximados';
                   }
-                  if (int.tryParse(value) == null) {
-                    return 'Please enter a valid number';
+                  int? dias = int.tryParse(value);
+                  if (dias == null) {
+                    return 'Por favor, ingrese un número válido';
+                  }
+                  if (dias < 1 || dias > 180) {
+                    return 'Por favor, ingrese un valor entre 1 y 180 días';
                   }
                   return null;
                 },
@@ -101,7 +104,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _addService,
-                child: const Text('Add Service'),
+                child: const Text('Agregar Servicio'),
               ),
             ],
           ),

@@ -22,37 +22,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
     user = widget.user;
     _vehiclesFuture = _fetchUserVehicles();
   }
-   Future<void> _deleteVehicle(BuildContext context, String vehicleId) async {
 
+  Future<void> _deleteVehicle(BuildContext context, String vehicleId) async {
     try {
-      // Inicia una transacción para asegurar la consistencia de la eliminación
       await FirebaseFirestore.instance.runTransaction((transaction) async {
-        // Referencia al documento del vehículo
         DocumentReference vehicleRef = FirebaseFirestore.instance.collection('vehiculos').doc(vehicleId);
-
-        // Elimina el vehículo
         transaction.delete(vehicleRef);
-       
 
-        // Obtén los turnos asociados al vehicleId del vehículo
         QuerySnapshot turnosSnapshot = await FirebaseFirestore.instance.collection('turns')
             .where('vehicleId', isEqualTo: vehicleId).get();
         for (DocumentSnapshot turnoDoc in turnosSnapshot.docs) {
-          // Elimina cada turno
           transaction.delete(turnoDoc.reference);
         }
-         ScaffoldMessenger.of(context).showSnackBar(
+
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Vehículo eliminado exitosamente')),
         );
-          setState(() {
+        setState(() {
           _vehiclesFuture = _fetchUserVehicles();
         });
-
       });
-
-      
     } catch (e) {
-      // Maneja el error si ocurre
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al eliminar el vehículo: $e')),
       );
@@ -67,45 +57,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return querySnapshot.docs.map((doc) => Vehicle.fromFirestore(doc)).toList();
   }
-  
-
-
 
   void _editUserInfo(BuildContext context) {
-    final TextEditingController nameController =
-        TextEditingController(text: user.name);
-    final TextEditingController phoneController =
-        TextEditingController(text: user.phone);
+    final TextEditingController nameController = TextEditingController(text: user.name);
+    final TextEditingController phoneController = TextEditingController(text: user.phone);
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Edit User Information'),
+          title: const Text('Editar información de usuario'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'Nombre'),
               ),
               TextField(
                 controller: phoneController,
-                decoration: const InputDecoration(labelText: 'Phone'),
+                decoration: const InputDecoration(labelText: 'Teléfono'),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () async {
-                await FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(user.id)
-                    .update({
+                if (nameController.text.isEmpty || phoneController.text.isEmpty || !RegExp(r'^\d+$').hasMatch(phoneController.text) || phoneController.text.length < 8) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Por favor, complete todos los campos correctamente')),
+                  );
+                  return;
+                }
+
+                await FirebaseFirestore.instance.collection('users').doc(user.id).update({
                   'name': nameController.text,
                   'phone': phoneController.text,
                 });
@@ -120,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 Navigator.of(context).pop();
               },
-              child: const Text('Save'),
+              child: const Text('Guardar'),
             ),
           ],
         );
@@ -129,63 +118,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _editVehicle(BuildContext context, Vehicle vehicle) {
-    final TextEditingController modelController =
-        TextEditingController(text: vehicle.model);
-    final TextEditingController brandController =
-        TextEditingController(text: vehicle.brand);
-    final TextEditingController licensePlateController =
-        TextEditingController(text: vehicle.licensePlate);
-    final TextEditingController yearController =
-        TextEditingController(text: vehicle.year ?? '');
+    final TextEditingController modelController = TextEditingController(text: vehicle.model);
+    final TextEditingController brandController = TextEditingController(text: vehicle.brand);
+    final TextEditingController licensePlateController = TextEditingController(text: vehicle.licensePlate);
+    final TextEditingController yearController = TextEditingController(text: vehicle.year ?? '');
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Edit Vehicle'),
+          title: const Text('Editar vehículo'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: modelController,
-                decoration: const InputDecoration(labelText: 'Model'),
+                decoration: const InputDecoration(labelText: 'Modelo'),
               ),
               TextField(
                 controller: brandController,
-                decoration: const InputDecoration(labelText: 'Brand'),
+                decoration: const InputDecoration(labelText: 'Marca'),
               ),
               TextField(
                 controller: licensePlateController,
-                decoration: const InputDecoration(labelText: 'License Plate'),
+                decoration: const InputDecoration(labelText: 'Matrícula'),
               ),
               TextField(
                 controller: yearController,
-                decoration:const InputDecoration(labelText: 'Year'),
+                decoration: const InputDecoration(labelText: 'Año'),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () async {
+                if (modelController.text.isEmpty ||
+                    brandController.text.isEmpty ||
+                    (licensePlateController.text.isEmpty || !RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$').hasMatch(licensePlateController.text)) ||
+                    (yearController.text.isNotEmpty && !RegExp(r'^\d{4}$').hasMatch(yearController.text))) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Por favor, complete todos los campos correctamente')),
+                  );
+                  return;
+                }
+
                 try {
-                  await FirebaseFirestore.instance
-                      .collection('vehiculos')
-                      .doc(vehicle
-                          .id) // Use vehicle.id instead of vehicle.licensePlate
-                      .update({
+                  await FirebaseFirestore.instance.collection('vehiculos').doc(vehicle.id).update({
                     'model': modelController.text,
                     'brand': brandController.text,
                     'licensePlate': licensePlateController.text,
-                    'year': yearController.text.isEmpty
-                        ? null
-                        : yearController.text,
+                    'year': yearController.text.isEmpty ? null : yearController.text,
                   });
 
-                   setState(() {
+                  setState(() {
                     _vehiclesFuture = _fetchUserVehicles();
                   });
                   Navigator.of(context).pop();
@@ -193,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   print('Error updating vehicle: $e');
                 }
               },
-              child: const Text('Save'),
+              child: const Text('Guardar'),
             ),
           ],
         );
@@ -204,55 +193,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _addVehicle(BuildContext context) {
     final TextEditingController modelController = TextEditingController();
     final TextEditingController brandController = TextEditingController();
-    final TextEditingController licensePlateController =
-        TextEditingController();
+    final TextEditingController licensePlateController = TextEditingController();
     final TextEditingController yearController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Add New Vehicle'),
+          title: const Text('Agregar nuevo vehículo'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: modelController,
-                decoration: const InputDecoration(labelText: 'Model'),
+                decoration: const InputDecoration(labelText: 'Modelo'),
               ),
               TextField(
                 controller: brandController,
-                decoration: const InputDecoration(labelText: 'Brand'),
+                decoration: const InputDecoration(labelText: 'Marca'),
               ),
               TextField(
                 controller: licensePlateController,
-                decoration: const InputDecoration(labelText: 'License Plate'),
+                decoration: const InputDecoration(labelText: 'Matrícula'),
               ),
               TextField(
                 controller: yearController,
-                decoration: const InputDecoration(labelText: 'Year'),
+                decoration: const InputDecoration(labelText: 'Año'),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: const Text('Cancelar'),
             ),
             TextButton(
               onPressed: () async {
+                if (modelController.text.isEmpty ||
+                    brandController.text.isEmpty ||
+                    (licensePlateController.text.isEmpty && !RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$').hasMatch(licensePlateController.text)) ||
+                    (yearController.text.isNotEmpty && !RegExp(r'^\d{4}$').hasMatch(yearController.text))) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Por favor, complete todos los campos correctamente')),
+                  );
+                  return;
+                }
+
                 try {
                   await FirebaseFirestore.instance.collection('vehiculos').add({
                     'model': modelController.text,
                     'brand': brandController.text,
                     'licensePlate': licensePlateController.text,
                     'userID': user.id,
-                    'year': yearController.text.isEmpty
-                        ? null
-                        : yearController.text,
+                    'year': yearController.text.isEmpty ? null : yearController.text,
                   });
 
-                   setState(() {
+                  setState(() {
                     _vehiclesFuture = _fetchUserVehicles();
                   });
                   Navigator.of(context).pop();
@@ -260,7 +256,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   print('Error adding vehicle: $e');
                 }
               },
-              child: const Text('Add'),
+              child: const Text('Agregar'),
             ),
           ],
         );
@@ -272,7 +268,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile: ${user.name}'),
+        title: Text('Perfil: ${user.name}'),
         automaticallyImplyLeading: true,
       ),
       body: Padding(
@@ -280,13 +276,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Profile:',
+            const Text('Perfil:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Card(
               elevation: 4,
               child: ListTile(
-                title: Text('Name: ${user.name}'),
-                subtitle: Text('Phone: ${user.phone}'),
+                title: Text('Nombre: ${user.name}'),
+                subtitle: Text('Teléfono: ${user.phone}'),
                 trailing: IconButton(
                   icon: Icon(Icons.edit),
                   onPressed: () => _editUserInfo(context),
@@ -294,7 +290,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text('Vehicles:',
+            const Text('Vehículos:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Flexible(
               child: ConstrainedBox(
@@ -307,9 +303,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(heightFactor: 2, child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
-                      return const Center(heightFactor: 2, child: Text('Error fetching vehicles'));
+                      return const Center(heightFactor: 2, child: Text('Error al obtener los vehículos'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(heightFactor: 2, child: Text('No vehicles found'));
+                      return const Center(heightFactor: 2, child: Text('No se encontraron vehículos'));
                     } else {
                       return ListView.builder(
                         shrinkWrap: true,
@@ -319,10 +315,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           return Card(
                             elevation: 4,
                             child: ListTile(
-                              title: Text(
-                                  '${vehicle.brand} ${vehicle.model} (${vehicle.year ?? 'N/A'})'),
-                              subtitle: Text(
-                                  'License Plate: ${vehicle.licensePlate}'),
+                              title: Text('${vehicle.brand} ${vehicle.model} (${vehicle.year ?? 'N/A'})'),
+                              subtitle: Text('Matrícula: ${vehicle.licensePlate}'),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -338,27 +332,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       bool? confirmDelete = await showDialog(
                                         context: context,
                                         builder: (context) => AlertDialog(
-                                          title: const Text('Delete Vehicle'),
-                                          content: const Text(
-                                              'Are you sure you want to delete this vehicle?'),
+                                          title: const Text('Eliminar vehículo'),
+                                          content: const Text('¿Estás seguro de que quieres eliminar este vehículo?'),
                                           actions: [
                                             TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(context)
-                                                      .pop(false),
-                                              child: const Text('Cancel'),
+                                              onPressed: () => Navigator.of(context).pop(false),
+                                              child: const Text('Cancelar'),
                                             ),
                                             TextButton(
-                                              onPressed: () =>
-                                                  Navigator.of(context)
-                                                      .pop(true),
-                                              child: const Text('Delete'),
+                                              onPressed: () => Navigator.of(context).pop(true),
+                                              child: const Text('Eliminar'),
                                             ),
                                           ],
                                         ),
                                       );
                                       if (confirmDelete == true) {
-                                        await _deleteVehicle(context,vehicle.id);
+                                        await _deleteVehicle(context, vehicle.id);
                                         setState(() {});
                                       }
                                     },
@@ -378,7 +367,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Center(
               child: ElevatedButton(
                 onPressed: () => _addVehicle(context),
-                child: const Text('Add New Vehicle'),
+                child: const Text('Agregar nuevo vehículo'),
               ),
             ),
           ],

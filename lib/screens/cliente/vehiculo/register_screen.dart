@@ -39,6 +39,24 @@ class _RegistroAutoViewState extends State<_RegistroAutoView> {
 
   @override
   Widget build(BuildContext context) {
+
+  bool _isValidYear(String year) {
+    // Validar que sea un año válido (entre 1900 y el año actual)
+    final currentYear = DateTime.now().year;
+    final yearInt = int.tryParse(year);
+    return yearInt != null && yearInt >= 1900 && yearInt <= currentYear;
+  }
+
+  bool _isValidPatent(String patent) {
+    // Validar que sea una patente válida
+    final regex = RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$');
+    return regex.hasMatch(patent);
+  }
+
+  bool _isValidModelAndBrand(String value) {
+    // Validar que la marca y el modelo tengan al menos 3 caracteres
+    return value.length >= 3;
+  }
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -109,7 +127,7 @@ class _RegistroAutoViewState extends State<_RegistroAutoView> {
                 String patente = _patenteController.text;
                 String year = _yearController.text;
 
-                // Validar campos (puedes agregar más validaciones según tus necesidades)
+                // Validar campos
                 if (modelo.isEmpty ||
                     marca.isEmpty ||
                     patente.isEmpty ||
@@ -119,12 +137,31 @@ class _RegistroAutoViewState extends State<_RegistroAutoView> {
                       content: Text('Por favor, complete todos los campos.'),
                     ),
                   );
+                } else if (!_isValidYear(year)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Ingrese un año válido.'),
+                    ),
+                  );
+                } else if (!_isValidPatent(patente)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Ingrese una patente válida (Ejemplo: AA123BB o ACB123).'),
+                    ),
+                  );
+                } else if (!_isValidModelAndBrand(modelo) || !_isValidModelAndBrand(marca)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('La marca y el modelo deben tener al menos 3 caracteres.'),
+                    ),
+                  );
                 } else if (userSesionID.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text('Usuario no registrado'),
                   ));
                 } else {
                   try {
+                    // Continuar con el registro del vehículo
                     await _firestore.collection('vehiculos').add({
                       'model': modelo,
                       'brand': marca,

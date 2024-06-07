@@ -16,8 +16,37 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String _errorMessage = '';
 
+
   Future<void> _login() async {
     try {
+       setState(() {
+      
+        _errorMessage = '';
+      });
+      if (_emailController.text.isEmpty ||
+          _passwordController.text.isEmpty) {
+        setState(() {
+          _errorMessage = 'Por favor llena los campos';
+
+        });
+        return;
+      }
+
+      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(_emailController.text)) {
+        setState(() {
+          _errorMessage = 'Email invalido';
+
+        });
+        return;
+      }
+
+      if (_passwordController.text.length < 6) {
+        setState(() {
+          _errorMessage = 'La contraseña debe contener aunque sea 6 caracteres';
+
+        });
+        return;
+      }
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
@@ -30,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } on FirebaseAuthException catch (e) {
       setState(() {
-        _errorMessage = e.message ?? 'An error occurred';
+        _errorMessage = e.message ?? 'Ocurrio un error';
       });
     }
   }
@@ -73,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _passwordController,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.lock),
-                    labelText: 'Password',
+                    labelText: 'Contraseña',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
@@ -108,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     context.push('/register');
                   },
                   child: const Text(
-                    'Don\'t have an account? Register here.',
+                    'No tenes una cuenta? registrate acá',
                     style: TextStyle(
                       color: Colors.blueAccent,
                     ),

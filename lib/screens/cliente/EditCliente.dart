@@ -16,6 +16,8 @@ class _EditUserScreenState extends State<EditUserScreen> {
   bool _isLoading = true;
   String? _userId;
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -26,7 +28,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
     try {
       _userId = FirebaseAuth.instance.currentUser?.uid;
       if (_userId == null) {
-        throw Exception('User is not logged in');
+        throw Exception('El usuario no ha iniciado sesión');
       }
 
       DocumentSnapshot userDoc = await _firestore.collection('users').doc(_userId).get();
@@ -36,10 +38,10 @@ class _EditUserScreenState extends State<EditUserScreen> {
           _phoneController.text = userDoc['phone'] ?? '';
         });
       } else {
-        print('User document does not exist');
+        print('El documento del usuario no existe');
       }
     } catch (e) {
-      print('Error loading user data: $e');
+      print('Error al cargar los datos del usuario: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -50,19 +52,21 @@ class _EditUserScreenState extends State<EditUserScreen> {
   Future<void> _saveChanges() async {
     if (_userId == null) return;
 
-    try {
-      await _firestore.collection('users').doc(_userId).update({
-        'name': _nameController.text,
-        'phone': _phoneController.text,
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User updated successfully')),
-      );
-    } catch (e) {
-      print('Error updating user: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error updating user')),
-      );
+    if (_formKey.currentState!.validate()) {
+      try {
+        await _firestore.collection('users').doc(_userId).update({
+          'name': _nameController.text,
+          'phone': _phoneController.text,
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Usuario actualizado exitosamente')),
+        );
+      } catch (e) {
+        print('Error al actualizar el usuario: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al actualizar el usuario')),
+        );
+      }
     }
   }
 
@@ -70,35 +74,57 @@ class _EditUserScreenState extends State<EditUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit User'),
+        title: const Text('Editar Usuario'),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Name',
-                      border: OutlineInputBorder(),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Nombre',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, ingrese el nombre';
+                        }
+                        return null;
+                      },
                     ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  TextField(
-                    controller: _phoneController,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone',
-                      border: OutlineInputBorder(),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _phoneController,
+                      decoration: const InputDecoration(
+                        labelText: 'Teléfono',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.phone,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, ingrese el teléfono';
+                        }
+                        if (value.length < 8) {
+                          return 'El teléfono debe tener al menos 8 caracteres';
+                        }
+                        if (int.tryParse(value) == null) {
+                          return 'Por favor, ingrese un número válido';
+                        }
+                        return null;
+                      },
                     ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: _saveChanges,
-                    child: const Text('Save Changes'),
-                  ),
-                ],
+                    const SizedBox(height: 16.0),
+                    ElevatedButton(
+                      onPressed: _saveChanges,
+                      child: const Text('Guardar Cambios'),
+                    ),
+                  ],
+                ),
               ),
             ),
     );

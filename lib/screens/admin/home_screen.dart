@@ -9,7 +9,7 @@ class AdminHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const HomeScreenBase(
-      title: 'Home: Admin',
+      title: 'Inicio: Admin',
       buttons: [
         NavigationButton(
           text: 'Metricas',

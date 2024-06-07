@@ -37,161 +37,176 @@ class _RegistroAutoViewState extends State<_RegistroAutoView> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String userSesionID = FirebaseAuth.instance.currentUser?.uid ?? '';
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
+    bool _isValidYear(String year) {
+      // Validar que sea un año válido (entre 1900 y el año actual)
+      final currentYear = DateTime.now().year;
+      final yearInt = int.tryParse(year);
+      return yearInt != null && yearInt >= 1900 && yearInt <= currentYear;
+    }
 
-  bool _isValidYear(String year) {
-    // Validar que sea un año válido (entre 1900 y el año actual)
-    final currentYear = DateTime.now().year;
-    final yearInt = int.tryParse(year);
-    return yearInt != null && yearInt >= 1900 && yearInt <= currentYear;
-  }
+    bool _isValidPatent(String patent) {
+      // Validar que sea una patente válida
+      final regex = RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$');
+      return regex.hasMatch(patent);
+    }
 
-  bool _isValidPatent(String patent) {
-    // Validar que sea una patente válida
-    final regex = RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$');
-    return regex.hasMatch(patent);
-  }
+    bool _isValidModelAndBrand(String value) {
+      // Validar que la marca y el modelo tengan al menos 3 caracteres
+      return value.length >= 3;
+    }
 
-  bool _isValidModelAndBrand(String value) {
-    // Validar que la marca y el modelo tengan al menos 3 caracteres
-    return value.length >= 3;
-  }
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _marcaController,
-              decoration: const InputDecoration(
-                hintText: 'Marca',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(8),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: _marcaController,
+                decoration: const InputDecoration(
+                  hintText: 'Marca',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _modeloController,
-              decoration: const InputDecoration(
-                hintText: 'Modelo',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _patenteController,
-              decoration: const InputDecoration(
-                hintText: 'Patente',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _yearController,
-              decoration: const InputDecoration(
-                hintText: 'Año',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(8),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Center(
-            child: ElevatedButton(
-              onPressed: () async {
-                String modelo = _modeloController.text;
-                String marca = _marcaController.text;
-                String patente = _patenteController.text;
-                String year = _yearController.text;
-
-                // Validar campos
-                if (modelo.isEmpty ||
-                    marca.isEmpty ||
-                    patente.isEmpty ||
-                    year.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Por favor, complete todos los campos.'),
-                    ),
-                  );
-                } else if (!_isValidYear(year)) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Ingrese un año válido.'),
-                    ),
-                  );
-                } else if (!_isValidPatent(patente)) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Ingrese una patente válida (Ejemplo: AA123BB o ACB123).'),
-                    ),
-                  );
-                } else if (!_isValidModelAndBrand(modelo) || !_isValidModelAndBrand(marca)) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('La marca y el modelo deben tener al menos 3 caracteres.'),
-                    ),
-                  );
-                } else if (userSesionID.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Usuario no registrado'),
-                  ));
-                } else {
-                  try {
-                    // Continuar con el registro del vehículo
-                    await _firestore.collection('vehiculos').add({
-                      'model': modelo,
-                      'brand': marca,
-                      'licensePlate': patente,
-                      'userID': userSesionID,
-                      'year': year,
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Auto registrado correctamente.'),
-                      ),
-                    );
-
-                    setState(() {});
-
-                    // Volver a la pantalla anterior
-                    context.pop();
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Error al registrar el vehículo: $e'),
-                      ),
-                    );
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, ingrese la marca';
                   }
-                }
-              },
-              child: const Text('Agregar auto'),
+                  if (!_isValidModelAndBrand(value)) {
+                    return 'La marca debe tener al menos 3 caracteres';
+                  }
+                  return null;
+                },
+              ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: _modeloController,
+                decoration: const InputDecoration(
+                  hintText: 'Modelo',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8),
+                    ),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, ingrese el modelo';
+                  }
+                  if (!_isValidModelAndBrand(value)) {
+                    return 'El modelo debe tener al menos 3 caracteres';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: _patenteController,
+                decoration: const InputDecoration(
+                  hintText: 'Patente',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8),
+                    ),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, ingrese la patente';
+                  }
+                  if (!_isValidPatent(value)) {
+                    return 'Ingrese una patente válida (Ejemplo: AA123BB o ACB123)';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                controller: _yearController,
+                decoration: const InputDecoration(
+                  hintText: 'Año',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8),
+                    ),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, ingrese el año';
+                  }
+                  if (!_isValidYear(value)) {
+                    return 'Ingrese un año válido (entre 1900 y el año actual)';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
+            Center(
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    String modelo = _modeloController.text;
+                    String marca = _marcaController.text;
+                    String patente = _patenteController.text;
+                    String year = _yearController.text;
+
+                    if (userSesionID.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Usuario no registrado')),
+                      );
+                    } else {
+                      try {
+                        // Continuar con el registro del vehículo
+                        await _firestore.collection('vehiculos').add({
+                          'model': modelo,
+                          'brand': marca,
+                          'licensePlate': patente,
+                          'userID': userSesionID,
+                          'year': year,
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Auto registrado correctamente.'),
+                          ),
+                        );
+
+                        setState(() {});
+
+                        // Volver a la pantalla anterior
+                        context.pop();
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error al registrar el vehículo: $e'),
+                          ),
+                        );
+                      }
+                    }
+                  }
+                },
+                child: const Text('Agregar auto'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

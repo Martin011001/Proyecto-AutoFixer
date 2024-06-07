@@ -16,6 +16,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late User user;
   late Future<List<Vehicle>> _vehiclesFuture;
 
+  String? _nameError;
+  String? _phoneError;
+  String? _modelError;
+  String? _brandError;
+  String? _licensePlateError;
+  String? _yearError;
+
   @override
   void initState() {
     super.initState();
@@ -65,53 +72,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Editar información de usuario'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Nombre'),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Editar información de usuario'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Nombre',
+                      errorText: _nameError,
+                      errorStyle: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  TextField(
+                    controller: phoneController,
+                    decoration: InputDecoration(
+                      labelText: 'Teléfono',
+                      errorText: _phoneError,
+                      errorStyle: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
               ),
-              TextField(
-                controller: phoneController,
-                decoration: const InputDecoration(labelText: 'Teléfono'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () async {
-                if (nameController.text.isEmpty || phoneController.text.isEmpty || !RegExp(r'^\d+$').hasMatch(phoneController.text) || phoneController.text.length < 8) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Por favor, complete todos los campos correctamente')),
-                  );
-                  return;
-                }
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancelar'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    setState(() {
+                      _nameError = nameController.text.isEmpty ? 'El nombre no puede estar vacío' : null;
+                      _phoneError = phoneController.text.isEmpty || !RegExp(r'^\d+$').hasMatch(phoneController.text) || phoneController.text.length < 8
+                          ? 'El teléfono debe ser numerico y de aunque sea 8 digitos'
+                          : null;
+                    });
 
-                await FirebaseFirestore.instance.collection('users').doc(user.id).update({
-                  'name': nameController.text,
-                  'phone': phoneController.text,
-                });
+                    if (_nameError != null || _phoneError != null) {
+                      return;
+                    }
 
-                setState(() {
-                  user = User(
-                    id: user.id,
-                    name: nameController.text,
-                    phone: phoneController.text,
-                  );
-                });
+                    await FirebaseFirestore.instance.collection('users').doc(user.id).update({
+                      'name': nameController.text,
+                      'phone': phoneController.text,
+                    });
 
-                Navigator.of(context).pop();
-              },
-              child: const Text('Guardar'),
-            ),
-          ],
+                    setState(() {
+                      user = User(
+                        id: user.id,
+                        name: nameController.text,
+                        phone: phoneController.text,
+                      );
+                    });
+
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Guardar'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -126,65 +149,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Editar vehículo'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: modelController,
-                decoration: const InputDecoration(labelText: 'Modelo'),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Editar vehículo'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: modelController,
+                    decoration: InputDecoration(
+                      labelText: 'Modelo',
+                      errorText: _modelError,
+                      errorStyle: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  TextField(
+                    controller: brandController,
+                    decoration: InputDecoration(
+                      labelText: 'Marca',
+                      errorText: _brandError,
+                      errorStyle: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  TextField(
+                    controller: licensePlateController,
+                    decoration: InputDecoration(
+                      labelText: 'Matrícula',
+                      errorText: _licensePlateError,
+                      errorStyle: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  TextField(
+                    controller: yearController,
+                    decoration: InputDecoration(
+                      labelText: 'Año',
+                      errorText: _yearError,
+                      errorStyle: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
               ),
-              TextField(
-                controller: brandController,
-                decoration: const InputDecoration(labelText: 'Marca'),
-              ),
-              TextField(
-                controller: licensePlateController,
-                decoration: const InputDecoration(labelText: 'Matrícula'),
-              ),
-              TextField(
-                controller: yearController,
-                decoration: const InputDecoration(labelText: 'Año'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () async {
-                if (modelController.text.isEmpty ||
-                    brandController.text.isEmpty ||
-                    (licensePlateController.text.isEmpty || !RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$').hasMatch(licensePlateController.text)) ||
-                    (yearController.text.isNotEmpty && !RegExp(r'^\d{4}$').hasMatch(yearController.text))) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Por favor, complete todos los campos correctamente')),
-                  );
-                  return;
-                }
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancelar'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    setState(() {
+                      _modelError = modelController.text.isEmpty || modelController.text.length < 3 ? 'El modelo debe tener aunque 3 caracteres' : null;
+                      _brandError = brandController.text.isEmpty || brandController.text.length < 3 ? 'La marca debe tener aunque 3 caracteres' : null;
+                      _licensePlateError = licensePlateController.text.isEmpty || !RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$').hasMatch(licensePlateController.text)
+                          ? 'Ingrese una patente válida (Ejemplo: AA123BB o ACB123)'
+                          : null;
+                      _yearError = yearController.text.isNotEmpty && !RegExp(r'^\d{4}$').hasMatch(yearController.text)
+                          ? 'Ingrese un año válido (entre 1900 y el año actual)'
+                          : null;
+                    });
 
-                try {
-                  await FirebaseFirestore.instance.collection('vehiculos').doc(vehicle.id).update({
-                    'model': modelController.text,
-                    'brand': brandController.text,
-                    'licensePlate': licensePlateController.text,
-                    'year': yearController.text.isEmpty ? null : yearController.text,
-                  });
+                    if (_modelError != null || _brandError != null || _licensePlateError != null || _yearError != null) {
+                      return;
+                    }
 
-                  setState(() {
-                    _vehiclesFuture = _fetchUserVehicles();
-                  });
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  print('Error updating vehicle: $e');
-                }
-              },
-              child: const Text('Guardar'),
-            ),
-          ],
+                    try {
+                      await FirebaseFirestore.instance.collection('vehiculos').doc(vehicle.id).update({
+                        'model': modelController.text,
+                        'brand': brandController.text,
+                        'licensePlate': licensePlateController.text,
+                        'year': yearController.text.isEmpty ? null : yearController.text,
+                      });
+
+                      setState(() {
+                        _vehiclesFuture = _fetchUserVehicles();
+                      });
+                      Navigator.of(context).pop();
+                    } catch (e) {
+                      print('Error updating vehicle: $e');
+                    }
+                  },
+                  child: const Text('Guardar'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -199,66 +247,91 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Agregar nuevo vehículo'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: modelController,
-                decoration: const InputDecoration(labelText: 'Modelo'),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Agregar nuevo vehículo'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: modelController,
+                    decoration: InputDecoration(
+                      labelText: 'Modelo',
+                      errorText: _modelError,
+                      errorStyle: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  TextField(
+                    controller: brandController,
+                    decoration: InputDecoration(
+                      labelText: 'Marca',
+                      errorText: _brandError,
+                      errorStyle: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  TextField(
+                    controller: licensePlateController,
+                    decoration: InputDecoration(
+                      labelText: 'Matrícula',
+                      errorText: _licensePlateError,
+                      errorStyle: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  TextField(
+                    controller: yearController,
+                    decoration: InputDecoration(
+                      labelText: 'Año',
+                      errorText: _yearError,
+                      errorStyle: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
               ),
-              TextField(
-                controller: brandController,
-                decoration: const InputDecoration(labelText: 'Marca'),
-              ),
-              TextField(
-                controller: licensePlateController,
-                decoration: const InputDecoration(labelText: 'Matrícula'),
-              ),
-              TextField(
-                controller: yearController,
-                decoration: const InputDecoration(labelText: 'Año'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () async {
-                if (modelController.text.isEmpty ||
-                    brandController.text.isEmpty ||
-                    (licensePlateController.text.isEmpty && !RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$').hasMatch(licensePlateController.text)) ||
-                    (yearController.text.isNotEmpty && !RegExp(r'^\d{4}$').hasMatch(yearController.text))) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Por favor, complete todos los campos correctamente')),
-                  );
-                  return;
-                }
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancelar'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    setState(() {
+                      _modelError = modelController.text.isEmpty || modelController.text.length < 3 ? 'El modelo debe tener 3 caracteres' : null;
+                      _brandError = brandController.text.isEmpty || brandController.text.length < 3 ? 'La marca debe tener 3 caracteres' : null;
+                      _licensePlateError = licensePlateController.text.isEmpty || !RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$').hasMatch(licensePlateController.text)
+                          ? 'Ingrese un año válido (entre 1900 y el año actual)'
+                          : null;
+                      _yearError = yearController.text.isNotEmpty && !RegExp(r'^\d{4}$').hasMatch(yearController.text)
+                          ? 'Ingrese un año válido (entre 1900 y el año actual)'
+                          : null;
+                    });
 
-                try {
-                  await FirebaseFirestore.instance.collection('vehiculos').add({
-                    'model': modelController.text,
-                    'brand': brandController.text,
-                    'licensePlate': licensePlateController.text,
-                    'userID': user.id,
-                    'year': yearController.text.isEmpty ? null : yearController.text,
-                  });
+                    if (_modelError != null || _brandError != null || _licensePlateError != null || _yearError != null) {
+                      return;
+                    }
 
-                  setState(() {
-                    _vehiclesFuture = _fetchUserVehicles();
-                  });
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  print('Error adding vehicle: $e');
-                }
-              },
-              child: const Text('Agregar'),
-            ),
-          ],
+                    try {
+                      await FirebaseFirestore.instance.collection('vehiculos').add({
+                        'model': modelController.text,
+                        'brand': brandController.text,
+                        'licensePlate': licensePlateController.text,
+                        'userID': user.id,
+                        'year': yearController.text.isEmpty ? null : yearController.text,
+                      });
+
+                      setState(() {
+                        _vehiclesFuture = _fetchUserVehicles();
+                      });
+                      Navigator.of(context).pop();
+                    } catch (e) {
+                      print('Error adding vehicle: $e');
+                    }
+                  },
+                  child: const Text('Agregar'),
+                ),
+              ],
+            );
+          },
         );
       },
     );

@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
-                  child: const Text('Login'),
+                  child: const Text('Logueate'),
                 ),
                 const SizedBox(height: 16.0),
                 // Error Message

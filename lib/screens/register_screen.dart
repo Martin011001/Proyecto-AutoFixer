@@ -120,7 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: const Text('Registro'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -164,7 +164,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ? const CircularProgressIndicator()
                 : ElevatedButton(
                     onPressed: _register,
-                    child: const Text('Register'),
+                    child: const Text('Registrate'),
                   ),
             const SizedBox(height: 16.0),
             if (_errorMessage.isNotEmpty)

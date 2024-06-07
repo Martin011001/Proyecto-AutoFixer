@@ -50,17 +50,70 @@ class _TurnCreateState extends State<TurnCreate> {
         0.0, (total, service) => total + service.price);
   }
 
-  DateTime _getEgresoEstimado(DateTime ingreso) {
+  Future<DateTime> _getEgresoEstimado(DateTime ingreso) async {
     int totalDias = 0;
 
+    // Sumar los días aproximados de cada servicio seleccionado
     for (var service in _selectedServices) {
       totalDias += service.diasAproximados;
     }
 
-    // Sumar el total de días a la fecha de ingreso
-    DateTime egresoEstimado = ingreso.add(Duration(days: totalDias));
+    try {
+      // Recuperar la configuración de businessHours desde Firestore
+      DocumentSnapshot<Map<String, dynamic>> businessHoursSnapshot =
+          await FirebaseFirestore.instance
+              .collection('configuration')
+              .doc('businessHours')
+              .get();
 
-    return egresoEstimado;
+      Map<String, dynamic> businessHours =
+          businessHoursSnapshot.data() as Map<String, dynamic>;
+
+      DateTime egresoEstimado = ingreso;
+      int diasAgregados = 0;
+
+      // Agregar días hábiles hasta alcanzar el total de días
+      while (diasAgregados < totalDias) {
+        egresoEstimado = egresoEstimado.add(Duration(days: 1));
+
+        // Obtener el nombre del día de la semana en inglés
+        String diaSemana = _getWeekdayName(egresoEstimado.weekday);
+
+        // Verificar si el día es hábil
+        if (businessHours[diaSemana]['open'] == true) {
+          diasAgregados++;
+        }
+      }
+
+      return egresoEstimado;
+    } catch (error) {
+      print("Error al obtener la configuración de businessHours: $error");
+      // Manejar el error de alguna manera apropiada
+      // Por ejemplo, devolver la fecha de egreso estimada sin considerar los días hábiles
+      return ingreso.add(Duration(days: totalDias));
+    }
+  }
+
+// Método para obtener el nombre del día de la semana en inglés
+  String _getWeekdayName(int weekday) {
+    switch (weekday) {
+      case DateTime.monday:
+        return 'Monday';
+      case DateTime.tuesday:
+        return 'Tuesday';
+      case DateTime.wednesday:
+        return 'Wednesday';
+      case DateTime.thursday:
+        return 'Thursday';
+      case DateTime.friday:
+        return 'Friday';
+      case DateTime.saturday:
+        return 'Saturday';
+      case DateTime.sunday:
+        return 'Sunday';
+      default:
+        return '';
+    }
   }
 
   bool _isSubmitEnabled() {
@@ -114,7 +167,7 @@ class _TurnCreateState extends State<TurnCreate> {
         ingreso: ingreso,
         state: 'pending',
         totalPrice: _getSubtotal(),
-        egreso: _getEgresoEstimado(ingreso));
+        egreso: await _getEgresoEstimado(ingreso));
 
     try {
       await FirebaseFirestore.instance

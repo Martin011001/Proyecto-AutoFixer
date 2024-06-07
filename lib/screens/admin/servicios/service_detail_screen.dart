@@ -1,6 +1,7 @@
 import 'package:aplicacion_taller/entities/service.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
 
 class ServiceDetailScreen extends StatefulWidget {
   final String serviceId;
@@ -18,6 +19,21 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
         .doc(widget.serviceId)
         .get();
     return Service.fromFirestore(doc);
+  }
+  Future<void> eliminarServicio(BuildContext context) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('services')
+          .doc(widget.serviceId)
+          .delete();
+      // Redirige a la página principal después de eliminar
+      context.pop(); // Ajusta la ruta según tu configuración
+    } catch (e) {
+      // Maneja el error si ocurre
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al eliminar el servicio: $e')),
+      );
+    }
   }
 
   @override
@@ -67,9 +83,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       ),
                       const SizedBox(width: 10),
                       ElevatedButton(
-                        onPressed: () {
-                          // Acción para eliminar
-                        },
+                          onPressed: () => eliminarServicio(context),
                         // ignore: sort_child_properties_last
                         child: const Text('Delete'),
                       ),

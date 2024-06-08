@@ -25,21 +25,16 @@ class PerfilesScreen extends StatelessWidget {
           // Referencia al documento del vehículo
           DocumentReference vehicleRef = vehicleDoc.reference;
 
-          // Obtén los turnos asociados al vehículo
-          QuerySnapshot turnosSnapshot = await FirebaseFirestore.instance
-              .collection('turns')
-              .where('vehicleId', isEqualTo: vehicleRef.id)
-              .get();
-
-          // Elimina cada turno asociado al vehículo
-          for (DocumentSnapshot turnoDoc in turnosSnapshot.docs) {
-            transaction.delete(turnoDoc.reference);
-          }
-
-          // Elimina el vehículo
           transaction.delete(vehicleRef);
         }
-
+         QuerySnapshot turnosSnapshot = await FirebaseFirestore.instance
+              .collection('turns')
+              .where('userId', isEqualTo: userId)
+              .get();
+              
+           for (DocumentSnapshot turnoDoc in turnosSnapshot.docs) {
+            transaction.delete(turnoDoc.reference);
+          }
         // Elimina el usuario
         transaction.delete(userRef);
       });

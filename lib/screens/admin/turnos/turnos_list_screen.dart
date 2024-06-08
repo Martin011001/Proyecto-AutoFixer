@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:aplicacion_taller/entities/turn.dart';
-
 import 'package:aplicacion_taller/widgets/turn_item.dart';
+import 'package:intl/intl.dart'; // Para formatear fechas
 
 class TurnosListScreen extends StatefulWidget {
   const TurnosListScreen({Key? key}) : super(key: key);
@@ -24,9 +24,24 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
   List<Turn> allTurns = [];
   bool isLoading = true;
 
+  // Fechas para los filtros
+  DateTime? startDate;
+  DateTime? endDate;
+
+  DateTime? egresoStartDate;
+  DateTime? egresoEndDate;
+
+  bool useIngresoFilter = true;
+  bool useEgresoFilter = false;
+
   @override
   void initState() {
     super.initState();
+    // Inicializar las fechas de filtro con una semana desde hoy
+    startDate = DateTime.now();
+    endDate = DateTime.now().add(Duration(days: 7));
+    egresoStartDate = DateTime.now();
+    egresoEndDate = DateTime.now().add(Duration(days: 14));
     _fetchTurns();
   }
 
@@ -46,12 +61,32 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
     }
   }
 
+  // Método para filtrar por fechas de ingreso y egreso
+  List<Turn> _filterByDate(List<Turn> turns) {
+    return turns.where((turn) {
+      bool withinIngresoDates = true;
+      bool withinEgresoDates = true;
+
+      if (useIngresoFilter && startDate != null && endDate != null) {
+        withinIngresoDates = turn.ingreso.isAfter(startDate!) && turn.ingreso.isBefore(endDate!);
+      }
+
+      if (useEgresoFilter && egresoStartDate != null && egresoEndDate != null) {
+        withinEgresoDates = turn.egreso.isAfter(egresoStartDate!) && turn.egreso.isBefore(egresoEndDate!);
+      }
+
+      return withinIngresoDates && withinEgresoDates;
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Turn> filteredTurns = selectedState != null &&
             selectedState!.value != 'Todos'
         ? allTurns.where((turn) => turn.state == selectedState!.value).toList()
         : allTurns;
+
+    filteredTurns = _filterByDate(filteredTurns);
 
     return Scaffold(
       appBar: AppBar(
@@ -62,31 +97,153 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: DropdownButtonFormField<TurnState>(
-              value: selectedState ??
-                  states.firstWhere((state) => state.value == 'Todos'),
-              onChanged: (value) {
-                setState(() {
-                  selectedState = value;
-                });
-                if (value!.value == 'Todos') {
-                  setState(() {
-                    filteredTurns = allTurns;
-                  });
-                }
-              },
-              items: states.map((state) {
-                return DropdownMenuItem<TurnState>(
-                  value: state,
-                  child: Row(
-                    children: <Widget>[
-                      Icon(state.icon),
-                      const SizedBox(width: 10),
-                      Text(state.title),
+            child: Column(
+              children: [
+                DropdownButtonFormField<TurnState>(
+                  value: selectedState ??
+                      states.firstWhere((state) => state.value == 'Todos'),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedState = value;
+                    });
+                    if (value!.value == 'Todos') {
+                      setState(() {
+                        filteredTurns = allTurns;
+                      });
+                    }
+                  },
+                  items: states.map((state) {
+                    return DropdownMenuItem<TurnState>(
+                      value: state,
+                      child: Row(
+                        children: <Widget>[
+                          Icon(state.icon),
+                          const SizedBox(width: 10),
+                          Text(state.title),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: useIngresoFilter,
+                      onChanged: (value) {
+                        setState(() {
+                          useIngresoFilter = value ?? true;
+                        });
+                      },
+                    ),
+                    const Text('Usar Fecha de Ingreso para filtrar'),
+                  ],
+                ),
+                if (useIngresoFilter) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: startDate ?? DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (picked != null && picked != startDate) {
+                            setState(() {
+                              startDate = picked;
+                            });
+                          }
+                        },
+                        child: Text(
+                          'Fecha de Ingreso: ${startDate != null ? DateFormat('dd/MM/yyyy').format(startDate!) : 'Seleccione'}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: endDate ?? DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (picked != null && picked != endDate) {
+                            setState(() {
+                              endDate = picked;
+                            });
+                          }
+                        },
+                        child: Text(
+                          'Hasta: ${endDate != null ? DateFormat('dd/MM/yyyy').format(endDate!) : 'Seleccione'}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
                     ],
                   ),
-                );
-              }).toList(),
+                ],
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: useEgresoFilter,
+                      onChanged: (value) {
+                        setState(() {
+                          useEgresoFilter = value ?? false;
+                        });
+                      },
+                    ),
+                    const Text('Usar Fecha de Egreso para filtrar'),
+                  ],
+                ),
+                if (useEgresoFilter) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: egresoStartDate ?? DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (picked != null && picked != egresoStartDate) {
+                            setState(() {
+                              egresoStartDate = picked;
+                            });
+                          }
+                        },
+                        child: Text(
+                          'Fecha de Egreso: ${egresoStartDate != null ? DateFormat('dd/MM/yyyy').format(egresoStartDate!) : 'Seleccione'}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: egresoEndDate ?? DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (picked != null && picked != egresoEndDate) {
+                            setState(() {
+                              egresoEndDate = picked;
+                            });
+                          }
+                        },
+                        child: Text(
+                          'Hasta: ${egresoEndDate != null ? DateFormat('dd/MM/yyyy').format(egresoEndDate!) : 'Seleccione'}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
             ),
           ),
           Expanded(

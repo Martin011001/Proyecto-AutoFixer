@@ -12,9 +12,9 @@ class ClienteHomeScreen extends StatelessWidget {
         title: 'Inicio: cliente',
         buttons: [
           NavigationButton(
-            text: 'Mis vehiculos',
-            route: '/cliente/vehiculo/list',
-            icon: Icon(Icons.car_rental, size: 115, color: Colors.white),
+            text: 'Solicitar turno',
+            route: '/cliente/turns/create/refactor',
+            icon: Icon(Icons.calendar_month, size: 115, color: Colors.white),
           ),
           NavigationButton(
             text: 'Mis reparaciones',
@@ -22,9 +22,9 @@ class ClienteHomeScreen extends StatelessWidget {
             icon: Icon(Icons.build, size: 115, color: Colors.white),
           ),
           NavigationButton(
-            text: 'Solicitar turno',
-            route: '/cliente/turns/create/refactor',
-            icon: Icon(Icons.calendar_month, size: 115, color: Colors.white),
+            text: 'Mis vehiculos',
+            route: '/cliente/vehiculo/list',
+            icon: Icon(Icons.car_rental, size: 115, color: Colors.white),
           ),
         ],
       ),

@@ -39,21 +39,54 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
     _fetchBusinessHours();
   }
 
-  Future<void> _fetchBusinessHours() async {
-    try {
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance
-          .collection('configuration')
-          .doc('businessHours')
-          .get();
-      if (snapshot.exists) {
-        setState(() {
-          businessHours = snapshot.data() as Map<String, dynamic>?;
-        });
-      }
-    } catch (e) {
-      print("Error fetching business hours: $e");
+Future<void> _fetchBusinessHours() async {
+  try {
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance
+        .collection('configuration')
+        .doc('businessHours')
+        .get();
+
+    if (snapshot.exists) {
+      setState(() {
+        businessHours = snapshot.data() as Map<String, dynamic>?;
+      });
+    } else {
+      await _createDefaultBusinessHours();
+      setState(() {
+        businessHours = {
+          'Monday': {'open': true, 'openTime': '08:00', 'closeTime': '18:00'},
+          'Tuesday': {'open': true, 'openTime': '08:00', 'closeTime': '18:00'},
+          'Wednesday': {'open': true, 'openTime': '08:00', 'closeTime': '18:00'},
+          'Thursday': {'open': true, 'openTime': '08:00', 'closeTime': '18:00'},
+          'Friday': {'open': true, 'openTime': '08:00', 'closeTime': '18:00'},
+          'Saturday': {'open': false, 'openTime': null, 'closeTime': null},
+          'Sunday': {'open': false, 'openTime': null, 'closeTime': null},
+        };
+      });
     }
+  } catch (e) {
+    print("Error fetching business hours: $e");
   }
+}
+
+Future<void> _createDefaultBusinessHours() async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('configuration')
+        .doc('businessHours')
+        .set({
+      'Monday': {'open': true, 'openTime': '08:00', 'closeTime': '18:00'},
+      'Tuesday': {'open': true, 'openTime': '08:00', 'closeTime': '18:00'},
+      'Wednesday': {'open': true, 'openTime': '08:00', 'closeTime': '18:00'},
+      'Thursday': {'open': true, 'openTime': '08:00', 'closeTime': '18:00'},
+      'Friday': {'open': true, 'openTime': '08:00', 'closeTime': '18:00'},
+      'Saturday': {'open': false, 'openTime': null, 'closeTime': null},
+      'Sunday': {'open': false, 'openTime': null, 'closeTime': null},
+    });
+  } catch (e) {
+    print("Error creating default business hours: $e");
+  }
+}
 
   Future<List<String>> _fetchReservedTimes(DateTime date) async {
     try {

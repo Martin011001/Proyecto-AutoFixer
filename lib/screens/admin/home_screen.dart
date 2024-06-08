@@ -12,11 +12,6 @@ class AdminHomeScreen extends StatelessWidget {
       title: 'Inicio: Admin',
       buttons: [
         NavigationButton(
-          text: 'Metricas',
-          route: '/administrador/metricas',
-          icon: Icon(Icons.bar_chart, size: 115, color: Colors.white),
-        ),
-        NavigationButton(
           text: 'Turnos',
           route: '/administrador/turnos',
           icon: Icon(Icons.calendar_month, size: 115, color: Colors.white),
@@ -25,6 +20,11 @@ class AdminHomeScreen extends StatelessWidget {
           text: 'Usuarios',
           route: '/administrador/perfiles',
           icon: Icon(Icons.person, size: 115, color: Colors.white),
+        ),
+        NavigationButton(
+          text: 'Metricas',
+          route: '/administrador/metricas',
+          icon: Icon(Icons.bar_chart, size: 115, color: Colors.white),
         ),
         NavigationButton(
           text: 'Servicios',

@@ -1,5 +1,5 @@
 import 'package:aplicacion_taller/entities/turn.dart';
-import 'package:aplicacion_taller/screens/admin/_turnos_detail_screen.dart';
+import 'package:aplicacion_taller/screens/admin/turnos/turnos_details_screen.dart';
 import 'package:aplicacion_taller/screens/admin/servicios/add_services_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:aplicacion_taller/screens/admin/home_screen.dart';
@@ -9,7 +9,7 @@ import 'package:aplicacion_taller/screens/admin/solicitudAdmin_screen.dart';
 import 'package:aplicacion_taller/screens/admin/servicios/_servicios_screen.dart';
 import 'package:aplicacion_taller/screens/admin/_metricas_screen.dart';
 import 'package:aplicacion_taller/screens/admin/_reparaciones_screen.dart';
-import 'package:aplicacion_taller/screens/admin/_turnos_screen.dart';
+import 'package:aplicacion_taller/screens/admin/turnos/turnos_list_screen.dart';
 import 'package:aplicacion_taller/screens/admin/business_hours_screen.dart';
 
 import 'package:aplicacion_taller/entities/user.dart';

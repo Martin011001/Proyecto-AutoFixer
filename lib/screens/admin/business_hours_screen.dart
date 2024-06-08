@@ -10,7 +10,7 @@ class BusinessHoursScreen extends StatefulWidget {
 
 class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   // Mapa para traducir días de inglés a español
   final Map<String, String> _daysTranslation = {
     'Monday': 'Lunes',
@@ -172,14 +172,14 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
                       onPressed: () => _pickTime(day, true),
                       child: Text(_openingTimes[day] != null
                           ? _timeOfDayToString(_openingTimes[day]!)
-                          : 'Establecer horario apertura'),
+                          : 'Apertura'),
                     ),
                     const Text('-'),
                     TextButton(
                       onPressed: () => _pickTime(day, false),
                       child: Text(_closingTimes[day] != null
                           ? _timeOfDayToString(_closingTimes[day]!)
-                          : 'Establecer horario cierre'),
+                          : 'Cierre'),
                     ),
                   ],
                 ),

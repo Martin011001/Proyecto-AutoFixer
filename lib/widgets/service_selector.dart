@@ -1,4 +1,3 @@
-// lib/widgets/service_selector.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:aplicacion_taller/entities/service.dart';
@@ -25,43 +24,62 @@ class ServiceSelector extends StatefulWidget {
 
 class _ServiceSelectorState extends State<ServiceSelector> {
   final Set<Service> _selectedServices = {};
+  int _totalDiasAproximados = 0;
+
+  void _updateSelectedServices(Service service, bool isSelected) {
+    setState(() {
+      if (isSelected) {
+        _selectedServices.add(service);
+      } else {
+        _selectedServices.remove(service);
+      }
+
+      _totalDiasAproximados = _selectedServices.fold(
+          0, (total, service) => total + service.diasAproximados);
+      widget.onServicesSelected(_selectedServices);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     if (widget.services.isEmpty) {
       return const Center(child: Text('No hay servicios disponibles'));
     } else {
-      return ExpansionTile(
-        title: const Text(
-          'Seleccionar servicios',
-          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-        ),
-        initiallyExpanded: true,
-        children: widget.services.map((service) {
-          return CheckboxListTile(
-            title: Row(
-              children: [
-                Text(service.name),
-                const Spacer(),
-                Text(
-                  '\$${service.price.toStringAsFixed(2)}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
+      return Column(
+        children: [
+          ExpansionTile(
+            title: const Text(
+              'Seleccionar servicios',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
-            value: _selectedServices.contains(service),
-            onChanged: (checked) {
-              setState(() {
-                if (checked!) {
-                  _selectedServices.add(service);
-                } else {
-                  _selectedServices.remove(service);
-                }
-                widget.onServicesSelected(_selectedServices);
-              });
-            },
-          );
-        }).toList(),
+            initiallyExpanded: true,
+            children: widget.services.map((service) {
+              return CheckboxListTile(
+                title: Row(
+                  children: [
+                    Text(service.name),
+                    const Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Dias: ${service.diasAproximados}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Text(
+                      '\$${service.price.toStringAsFixed(2)}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                value: _selectedServices.contains(service),
+                onChanged: (checked) {
+                  _updateSelectedServices(service, checked!);
+                },
+              );
+            }).toList(),
+          ),
+        ],
       );
     }
   }

@@ -52,6 +52,11 @@ class _TurnCreateState extends State<TurnCreate> {
         0.0, (total, service) => total + service.price);
   }
 
+  double _getDiasAproximados() {
+    return _selectedServices.fold(
+        0.0, (total, service) => total + service.diasAproximados);
+  }
+
   Future<DateTime> _getEgresoEstimado(DateTime ingreso) async {
     int totalDias = 0;
 
@@ -133,9 +138,18 @@ class _TurnCreateState extends State<TurnCreate> {
   Widget _buildSubtotal() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0),
-      child: Text(
-        'Subtotal: \$${_getSubtotal().toStringAsFixed(2)}',
-        style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Precio: \$${_getSubtotal().toStringAsFixed(2)}',
+            style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            'Dias habiles estimados: ${_getDiasAproximados().toStringAsFixed(0)}',
+            style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
     );
   }

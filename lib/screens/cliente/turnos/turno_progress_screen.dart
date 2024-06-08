@@ -20,7 +20,8 @@ class VerProgresoReparaciones extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Vehículo: ${turnDetails.vehicleBrand} ${turnDetails.vehicleModel}',
+              Text(
+                  'Vehículo: ${turnDetails.vehicleBrand} ${turnDetails.vehicleModel}',
                   style: const TextStyle(fontSize: 18)),
               Text('Fecha de ingreso: ${turnDetails.formattedDate}',
                   style: const TextStyle(fontSize: 18)),
@@ -37,18 +38,22 @@ class VerProgresoReparaciones extends StatelessWidget {
 
   Widget _buildProgressIndicator(String state) {
     double progress = 0.0;
+    // ['Pendiente', 'Confirmado', 'En Progreso', 'Realizado', 'Cancelado']
 
     switch (state) {
-      case 'pending':
+      case 'Pendiente':
         progress = 0.25;
         break;
-      case 'confirm':
+      case 'Confirmado':
         progress = 0.50;
         break;
-      case 'in progress':
+      case 'En Progreso':
         progress = 0.75;
         break;
-      case 'done':
+      case 'Realizado':
+        progress = 1.0;
+        break;
+      case 'Cancelado':
         progress = 1.0;
         break;
     }

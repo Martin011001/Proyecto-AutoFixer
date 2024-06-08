@@ -10,6 +10,7 @@ import 'package:aplicacion_taller/widgets/spaced_column.dart';
 import 'package:aplicacion_taller/widgets/vehicle_selector.dart';
 import 'package:aplicacion_taller/widgets/service_selector.dart';
 import 'package:aplicacion_taller/widgets/date_time_selector.dart';
+import 'package:aplicacion_taller/widgets/message_form.dart';
 
 class TurnCreate extends StatefulWidget {
   const TurnCreate({super.key});
@@ -23,6 +24,7 @@ class _TurnCreateState extends State<TurnCreate> {
   Set<Service> _selectedServices = {};
   DateTime? _selectedDate;
   String? _selectedHour;
+  String? _message;
 
   late Future<void> _initialLoadFuture;
   List<Vehicle>? _vehicles;
@@ -94,7 +96,7 @@ class _TurnCreateState extends State<TurnCreate> {
     }
   }
 
-// Método para obtener el nombre del día de la semana en inglés
+  // Método para obtener el nombre del día de la semana en inglés
   String _getWeekdayName(int weekday) {
     switch (weekday) {
       case DateTime.monday:
@@ -167,7 +169,8 @@ class _TurnCreateState extends State<TurnCreate> {
         ingreso: ingreso,
         state: 'Pendiente',
         totalPrice: _getSubtotal(),
-        egreso: await _getEgresoEstimado(ingreso));
+        egreso: await _getEgresoEstimado(ingreso),
+        message: _message ?? '');
 
     try {
       await FirebaseFirestore.instance
@@ -202,6 +205,9 @@ class _TurnCreateState extends State<TurnCreate> {
         ServiceSelector(
           services: _services!,
           onServicesSelected: (x) => setState(() => _selectedServices = x),
+        ),
+        MessageForm(
+          onMessageChanged: (x) => setState(() => _message = x),
         ),
         _buildSubtotal(),
         _buildSubmitButton(),

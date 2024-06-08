@@ -66,7 +66,7 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error loading business hours';
+        _errorMessage = 'Error cargando las horas de negocio';
         _isLoading = false;
       });
     }
@@ -92,7 +92,7 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
           .set(data);
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error saving business hours';
+        _errorMessage = 'Error guardando las horas de negocio';
       });
     }
   }

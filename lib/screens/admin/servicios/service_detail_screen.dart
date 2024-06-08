@@ -48,9 +48,9 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text('Error fetching service details'));
+            return const Center(child: Text('Error al traer los detalles del servicio'));
           } else if (!snapshot.hasData) {
-            return const Center(child: Text('Service not found'));
+            return const Center(child: Text('Servicio no encontrado'));
           }
 
           Service service = snapshot.data!;

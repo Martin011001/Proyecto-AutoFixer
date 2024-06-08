@@ -225,7 +225,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       });
                       Navigator.of(context).pop();
                     } catch (e) {
-                      print('Error updating vehicle: $e');
+                      print('Error actualizando vehiculo: $e');
                     }
                   },
                   child: const Text('Guardar'),
@@ -324,7 +324,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       });
                       Navigator.of(context).pop();
                     } catch (e) {
-                      print('Error adding vehicle: $e');
+                      print('Error agregando vehiculo: $e');
                     }
                   },
                   child: const Text('Agregar'),

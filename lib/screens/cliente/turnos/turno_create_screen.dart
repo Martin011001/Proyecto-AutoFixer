@@ -178,14 +178,14 @@ class _TurnCreateState extends State<TurnCreate> {
           .add(newTurn.toFirestore());
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Turn created successfully'),
+          content: Text('Turno creado exitosamente'),
         ),
       );
       context.pop();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Failed to create turn'),
+          content: Text('Error al crear turno'),
         ),
       );
     }

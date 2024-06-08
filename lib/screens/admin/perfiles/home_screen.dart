@@ -70,7 +70,7 @@ class PerfilesScreen extends StatelessWidget {
           if (snapshot.hasError) {
             print("Error: ${snapshot.error}");
             return Center(
-                child: Text('Something went wrong: ${snapshot.error}'));
+                child: Text('Algo ha salido mal: ${snapshot.error}'));
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -104,15 +104,15 @@ class PerfilesScreen extends StatelessWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: const Text('Confirm Deletion'),
+                            title: const Text('Confirmar eliminación'),
                             content: Text(
-                                'Are you sure you want to delete ${user.name}?'),
+                                'Seguro que desea eliminar el usuario ${user.name}?'),
                             actions: [
                               TextButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: const Text('Cancel'),
+                                child: const Text('Cancelar'),
                               ),
                               TextButton(
                                 onPressed: () async {
@@ -120,7 +120,7 @@ class PerfilesScreen extends StatelessWidget {
                                   await _deleteUser(context, user.id);
                                   Navigator.of(context).pop();
                                 },
-                                child: const Text('Delete'),
+                                child: const Text('Eliminar'),
                               ),
                             ],
                           );

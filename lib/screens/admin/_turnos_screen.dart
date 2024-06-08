@@ -14,7 +14,7 @@ class TurnosScreen extends StatefulWidget {
 
 class _TurnosScreenState extends State<TurnosScreen> {
   String? selectedState;
-  final List<String> states = ['pending', 'confirm', 'in progress', 'done'];
+  final List<String> states = ['Pendiente', 'Confirmado', 'En Progreso', 'Realizado', 'Cancelado'];
 
   @override
   Widget build(BuildContext context) {
@@ -79,14 +79,16 @@ class _TurnosScreenState extends State<TurnosScreen> {
 
   String _getStateTitle(String state) {
     switch (state) {
-      case 'pending':
+      case 'Pendiente':
         return 'Turnos Pendientes';
-      case 'confirm':
+      case 'Confirmado':
         return 'Turnos Confirmados';
-      case 'in progress':
+      case 'En Progreso':
         return 'Turnos en Progreso';
-      case 'done':
+      case 'Realizado':
         return 'Turnos Completados';
+      case 'Cancelado':
+        return 'Turnos Cancelados';
       default:
         return '';
     }

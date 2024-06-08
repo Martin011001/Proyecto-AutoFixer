@@ -22,6 +22,16 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
   late Future<List<String>> availableTimes;
   Map<String, dynamic>? businessHours;
 
+  final Map<String, String> _daysTranslation = {
+    'Monday': 'Lunes',
+    'Tuesday': 'Martes',
+    'Wednesday': 'Miércoles',
+    'Thursday': 'Jueves',
+    'Friday': 'Viernes',
+    'Saturday': 'Sábado',
+    'Sunday': 'Domingo',
+  };
+
   @override
   void initState() {
     super.initState();
@@ -117,7 +127,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
           Text(selectedDate == null
               ? 'Seleccionar fecha'
               : 'Fecha seleccionada: ${DateFormat('yyyy-MM-dd').format(selectedDate!)}'),
-          SizedBox(width: 10), // Add some spacing
+          const SizedBox(width: 10), // Add some spacing
           if (businessHours != null && selectedDate != null)
             _buildBusinessHoursIndicator(selectedDate!),
         ],
@@ -147,8 +157,8 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
     bool isOpen = businessHours![dayOfWeek]['open'];
 
     return isOpen
-        ? Icon(Icons.check_circle, color: Colors.green)
-        : Icon(Icons.cancel, color: Colors.red);
+        ? const Icon(Icons.check_circle, color: Colors.green)
+        : const Icon(Icons.cancel, color: Colors.red);
   }
 
   void _showAvailableTimesDialog(BuildContext context, List<String> times) {
@@ -181,7 +191,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
               onPressed: () {
                 Navigator.pop(context); // Close the dialog
               },
-              child: const Text('Cancel'),
+              child: const Text('Cancelar'),
             ),
           ],
         );
@@ -195,13 +205,13 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
       builder: (BuildContext context) {
         return Dialog(
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: businessHours != null
                 ? Column(
                     mainAxisSize: MainAxisSize.min,
                     children: _buildBusinessHoursList(),
                   )
-                : Center(
+                : const Center(
                     child: CircularProgressIndicator(),
                   ),
           ),
@@ -238,11 +248,13 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
         String openTime = businessHours![day]['openTime'] ?? '';
         String closeTime = businessHours![day]['closeTime'] ?? '';
 
-        String hoursText = isOpen ? '$openTime - $closeTime' : 'CLOSED';
+        String translatedDay = _daysTranslation[day] ?? day; // Traduce el día al español
+
+        String hoursText = isOpen ? '$openTime - $closeTime' : 'CERRADO';
 
         list.add(ListTile(
           title: Text(
-            '$day: $hoursText',
+            '$translatedDay: $hoursText',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: isOpen ? Colors.black : Colors.red,
@@ -252,7 +264,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
       }
     } else {
       // Handle the case when businessHours is null
-      list.add(Text('Business hours data is not available.'));
+      list.add(const Text('Datos de horas de negocio no disponibles.'));
     }
 
     return list;
@@ -283,7 +295,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
                       _showAvailableTimesDialog(context, availableTimes);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('No available times'),
+                        content: Text('No hay horas disponibles'),
                       ));
                     }
                   },
@@ -306,7 +318,7 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              title: Text('Horas de negocio'),
+              title: const Text('Horas de negocio'),
               trailing: const Icon(Icons.store),
               onTap: () {
                 _showBusinessHoursDialog(context);

@@ -1,7 +1,7 @@
 import 'package:aplicacion_taller/entities/turn.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class TurnoDetailsScreen extends StatefulWidget {
   final Turn turn;
@@ -13,14 +13,48 @@ class TurnoDetailsScreen extends StatefulWidget {
 
 class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
   late String _selectedState;
-  final List<String> _states = ['pending', 'confirm', 'in progress', 'done'];
+  final List<String> _states = ['Pendiente', 'Confirmado', 'En Progreso', 'Realizado', 'Cancelado'];
+  String? _vehicleDetails;
+  String? _userDetails;
 
   @override
   void initState() {
     super.initState();
-    // Verifica que el estado inicial sea válido, si no, asigna un valor predeterminado
-    _selectedState =
-        _states.contains(widget.turn.state) ? widget.turn.state : _states[0];
+    _selectedState = _states.contains(widget.turn.state) ? widget.turn.state : _states[0];
+    _fetchVehicleDetails();
+    _fetchUserDetails();
+  }
+
+  Future<void> _fetchVehicleDetails() async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('vehiculos')
+          .doc(widget.turn.vehicleId)
+          .get();
+      if (snapshot.exists) {
+        setState(() {
+          _vehicleDetails = '${snapshot['model']} - ${snapshot['brand']} - Patente: ${snapshot['licensePlate']}';
+        });
+      }
+    } catch (e) {
+      print('Error al obtener detalles del vehículo: $e');
+    }
+  }
+
+  Future<void> _fetchUserDetails() async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.turn.userId)
+          .get();
+      if (snapshot.exists) {
+        setState(() {
+          _userDetails = snapshot['name'] ?? 'Nombre no disponible';
+        });
+      }
+    } catch (e) {
+      print('Error al obtener detalles del usuario: $e');
+    }
   }
 
   void _updateTurnState() async {
@@ -29,53 +63,104 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
           .collection('turns')
           .doc(widget.turn.id)
           .update({'state': _selectedState});
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Estado actualizado con éxito')),
+      );
     } catch (e) {
       print('Error al actualizar el estado del turno: $e');
     }
-    context.pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white, // Fondo blanco para toda la pantalla
       appBar: AppBar(
         title: const Text('Detalles del Turno'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('ID del Turno: ${widget.turn.id}',
-                style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 16),
-            Text('Fecha de Ingreso: ${widget.turn.ingreso}',
-                style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 16),
-            const Text('Estado:', style: TextStyle(fontSize: 18)),
-            const SizedBox(height: 8),
-            DropdownButton<String>(
-              value: _selectedState,
-              items: _states.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() {
-                  _selectedState = newValue!;
-                });
-              },
+        child: Card(
+          color: Colors.white, // Fondo blanco para la tarjeta
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDetailRow(
+                  'Fecha de Ingreso',
+                  DateFormat('dd/MM/yyyy').format(widget.turn.ingreso),
+                ),
+                const SizedBox(height: 16),
+                _buildDetailRow('Detalles del Vehículo', _vehicleDetails),
+                const SizedBox(height: 16),
+                _buildDetailRow('Usuario', _userDetails),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    const Text(
+                      'Estado:',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: DropdownButton<String>(
+                        value: _selectedState,
+                        items: _states.map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            _selectedState = newValue!;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _updateTurnState,
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text('Actualizar Estado'),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _updateTurnState,
-              child: const Text('OK'),
-            ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  Widget _buildDetailRow(String title, String? detail) {
+    return detail == null
+        ? const CircularProgressIndicator()
+        : Row(
+            children: [
+              Text(
+                '$title: ',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child: Text(
+                  detail,
+                  style: const TextStyle(fontSize: 18, color: Colors.black87),
+                ),
+              ),
+            ],
+          );
   }
 }

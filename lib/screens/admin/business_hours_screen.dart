@@ -10,14 +10,26 @@ class BusinessHoursScreen extends StatefulWidget {
 
 class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
+  // Mapa para traducir días de inglés a español
+  final Map<String, String> _daysTranslation = {
+    'Monday': 'Lunes',
+    'Tuesday': 'Martes',
+    'Wednesday': 'Miércoles',
+    'Thursday': 'Jueves',
+    'Friday': 'Viernes',
+    'Saturday': 'Sábado',
+    'Sunday': 'Domingo',
+  };
+
   final Map<String, bool> _openDays = {
-    'Lunes': false,
-    'Martes': false,
-    'Miercoles': false,
-    'Jueves': false,
-    'Viernes': false,
-    'Sabado': false,
-    'Doimingo': false,
+    'Monday': false,
+    'Tuesday': false,
+    'Wednesday': false,
+    'Thursday': false,
+    'Friday': false,
+    'Saturday': false,
+    'Sunday': false,
   };
 
   final Map<String, TimeOfDay?> _openingTimes = {};
@@ -104,8 +116,8 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
 
   void _pickTime(String day, bool isOpeningTime) async {
     TimeOfDay initialTime = isOpeningTime
-        ? (_openingTimes[day] ?? TimeOfDay(hour: 9, minute: 0))
-        : (_closingTimes[day] ?? TimeOfDay(hour: 18, minute: 0));
+        ? (_openingTimes[day] ?? const TimeOfDay(hour: 9, minute: 0))
+        : (_closingTimes[day] ?? const TimeOfDay(hour: 18, minute: 0));
 
     TimeOfDay? pickedTime = await showTimePicker(
       context: context,
@@ -125,6 +137,7 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
   }
 
   Widget _buildDayCard(String day) {
+    String translatedDay = _daysTranslation[day] ?? day; // Traduce el día al español
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Padding(
@@ -135,8 +148,8 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  day,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  translatedDay,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Switch(
                   value: _openDays[day]!,
@@ -161,7 +174,7 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
                           ? _timeOfDayToString(_openingTimes[day]!)
                           : 'Establecer horario apertura'),
                     ),
-                    Text('-'),
+                    const Text('-'),
                     TextButton(
                       onPressed: () => _pickTime(day, false),
                       child: Text(_closingTimes[day] != null
@@ -184,7 +197,7 @@ class _BusinessHoursScreenState extends State<BusinessHoursScreen> {
         title: const Text('Horas de negocio'),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
               ? Center(child: Text(_errorMessage!))
               : Padding(

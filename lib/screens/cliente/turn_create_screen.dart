@@ -141,7 +141,7 @@ class _TurnCreateState extends State<TurnCreate> {
   Widget _buildSubmitButton() {
     return ElevatedButton(
       onPressed: _isSubmitEnabled() ? _submitTurn : null,
-      child: const Text('Submit'),
+      child: const Text('Solicitar'),
     );
   }
 

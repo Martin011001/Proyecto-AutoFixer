@@ -58,7 +58,7 @@ class HomeScreenBase extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
-                height: 270, // Altura fija para cada botón
+                height: 220, // Altura fija para cada botón
                 child: button,
               ),
             );

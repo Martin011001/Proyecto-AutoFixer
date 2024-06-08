@@ -17,11 +17,7 @@ class NavigationButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () =>  context.push(route),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.lightBlueAccent.withOpacity(0.4),
-          borderRadius: BorderRadius.circular(16.0),
-        ),
+      child: Card(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -30,7 +26,7 @@ class NavigationButton extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 text,
-                style: const TextStyle(fontSize: 42, color: Colors.white), // Aumenta el tamaño del texto
+                style: const TextStyle(fontSize: 32, color: Colors.black), // Aumenta el tamaño del texto
               ),
             ],
           ),

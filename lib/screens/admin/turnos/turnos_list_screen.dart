@@ -5,7 +5,7 @@ import 'package:aplicacion_taller/entities/turn.dart';
 import 'package:aplicacion_taller/widgets/turn_item.dart';
 
 class TurnosListScreen extends StatefulWidget {
-  const TurnosListScreen({super.key});
+  const TurnosListScreen({Key? key}) : super(key: key);
 
   @override
   _TurnosListScreenState createState() => _TurnosListScreenState();
@@ -58,22 +58,28 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
       ),
       body: Column(
         children: [
-          ExpansionTile(
-            title: const Text('Seleccionar estado'),
-            subtitle: selectedState != null
-                ? Text('Estado seleccionado: ${_getStateTitle(selectedState!)}')
-                : const Text('Seleccione un estado'),
-            children: states.map((state) {
-              return CheckboxListTile(
-                value: selectedState == state,
-                onChanged: (value) {
-                  setState(() {
-                    selectedState = value! ? state : null;
-                  });
-                },
-                title: Text(_getStateTitle(state)),
-              );
-            }).toList(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: DropdownButtonFormField<String>(
+              value: selectedState,
+              onChanged: (value) {
+                setState(() {
+                  selectedState = value;
+                });
+              },
+              items: [
+                const DropdownMenuItem<String>(
+                  value: null,
+                  child: Text('Todos'), // default value
+                ),
+                ...states.map((state) {
+                  return DropdownMenuItem<String>(
+                    value: state,
+                    child: Text(_getStateTitle(state)),
+                  );
+                }).toList(),
+              ],
+            ),
           ),
           Expanded(
             child: isLoading
@@ -91,6 +97,8 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
 
   String _getStateTitle(String state) {
     switch (state) {
+      case 'Todos':
+        return 'Todos los Turnos';
       case 'Pendiente':
         return 'Turnos Pendientes';
       case 'Confirmado':
@@ -122,14 +130,6 @@ class _ListTurnView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        if (selectedState != null)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              getStateTitle(selectedState!),
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ),
         ...turns.map((turn) => TurnItem(turn: turn)),
         if (turns.isNotEmpty) const Divider(),
       ],

@@ -146,7 +146,7 @@ class _TurnCreateState extends State<TurnCreate> {
             style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
           ),
           Text(
-            'Dias habiles estimados: ${_getDiasAproximados().toStringAsFixed(0)}',
+            'Duración: ${_getDiasAproximados().toStringAsFixed(0)} dia(s) habiles',
             style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
           ),
         ],

@@ -58,12 +58,11 @@ class _TurnosScreenState extends State<TurnosScreen> {
                 ? Text('Estado seleccionado: ${_getStateTitle(selectedState!)}')
                 : const Text('Seleccione un estado'),
             children: states.map((state) {
-              return RadioListTile<String>(
-                value: state,
-                groupValue: selectedState,
+              return CheckboxListTile(
+                value: selectedState == state,
                 onChanged: (value) {
                   setState(() {
-                    selectedState = value;
+                    selectedState = value! ? state : null;
                   });
                 },
                 title: Text(_getStateTitle(state)),
@@ -147,7 +146,7 @@ class _TurnItem extends StatelessWidget {
           FirebaseFirestore.instance.collection('users').doc(turn.userId).get(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const LinearProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
           return const Text('Error al cargar usuario');
@@ -160,6 +159,7 @@ class _TurnItem extends StatelessWidget {
 
         return Card(
           child: ListTile(
+            leading: _getStateIcon(turn.state),
             title: Text(user.name),
             subtitle: Text(formattedDate),
             onTap: () {
@@ -169,5 +169,22 @@ class _TurnItem extends StatelessWidget {
         );
       },
     );
+  }
+
+  Icon _getStateIcon(String state) {
+    switch (state) {
+      case 'Pendiente':
+        return const Icon(Icons.pending, color: Colors.orange);
+      case 'Confirmado':
+        return const Icon(Icons.check_circle, color: Colors.green);
+      case 'En Progreso':
+        return const Icon(Icons.autorenew, color: Colors.blue);
+      case 'Realizado':
+        return const Icon(Icons.done, color: Colors.purple);
+      case 'Cancelado':
+        return const Icon(Icons.cancel, color: Colors.red);
+      default:
+        return const Icon(Icons.help, color: Colors.grey);
+    }
   }
 }

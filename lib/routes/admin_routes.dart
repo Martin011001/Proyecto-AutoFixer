@@ -25,7 +25,7 @@ final adminRoutes = [
   ),
   GoRoute(
     path: '/administrador/turnos',
-    builder: (context, state) => const TurnosScreen(),
+    builder: (context, state) => const TurnosListScreen(),
   ),
   //GoRoute(
   //  path: '/administrador/reparaciones',

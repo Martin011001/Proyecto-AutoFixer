@@ -4,14 +4,14 @@ import 'package:aplicacion_taller/entities/turn.dart';
 
 import 'package:aplicacion_taller/widgets/turn_item.dart';
 
-class TurnosScreen extends StatefulWidget {
-  const TurnosScreen({super.key});
+class TurnosListScreen extends StatefulWidget {
+  const TurnosListScreen({super.key});
 
   @override
-  _TurnosScreenState createState() => _TurnosScreenState();
+  _TurnosListScreenState createState() => _TurnosListScreenState();
 }
 
-class _TurnosScreenState extends State<TurnosScreen> {
+class _TurnosListScreenState extends State<TurnosListScreen> {
   String? selectedState;
   final List<String> states = [
     'Pendiente',

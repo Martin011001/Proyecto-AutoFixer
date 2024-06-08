@@ -12,13 +12,14 @@ class TurnosListScreen extends StatefulWidget {
 }
 
 class _TurnosListScreenState extends State<TurnosListScreen> {
-  String? selectedState;
-  final List<String> states = [
-    'Pendiente',
-    'Confirmado',
-    'En Progreso',
-    'Realizado',
-    'Cancelado'
+  TurnState? selectedState;
+  final List<TurnState> states = [
+    TurnState('Todos', 'Todos los Turnos', Icons.all_inclusive),
+    TurnState('Pendiente', 'Turnos Pendientes', Icons.access_time),
+    TurnState('Confirmado', 'Turnos Confirmados', Icons.check_circle),
+    TurnState('En Progreso', 'Turnos en Progreso', Icons.hourglass_bottom),
+    TurnState('Realizado', 'Turnos Completados', Icons.done),
+    TurnState('Cancelado', 'Turnos Cancelados', Icons.cancel),
   ];
   List<Turn> allTurns = [];
   bool isLoading = true;
@@ -47,8 +48,9 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Turn> filteredTurns = selectedState != null
-        ? allTurns.where((turn) => turn.state == selectedState).toList()
+    List<Turn> filteredTurns = selectedState != null &&
+            selectedState!.value != 'Todos'
+        ? allTurns.where((turn) => turn.state == selectedState!.value).toList()
         : allTurns;
 
     return Scaffold(
@@ -60,25 +62,31 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: DropdownButtonFormField<String>(
-              value: selectedState,
+            child: DropdownButtonFormField<TurnState>(
+              value: selectedState ??
+                  states.firstWhere((state) => state.value == 'Todos'),
               onChanged: (value) {
                 setState(() {
                   selectedState = value;
                 });
+                if (value!.value == 'Todos') {
+                  setState(() {
+                    filteredTurns = allTurns;
+                  });
+                }
               },
-              items: [
-                const DropdownMenuItem<String>(
-                  value: null,
-                  child: Text('Todos'), // default value
-                ),
-                ...states.map((state) {
-                  return DropdownMenuItem<String>(
-                    value: state,
-                    child: Text(_getStateTitle(state)),
-                  );
-                }).toList(),
-              ],
+              items: states.map((state) {
+                return DropdownMenuItem<TurnState>(
+                  value: state,
+                  child: Row(
+                    children: <Widget>[
+                      Icon(state.icon),
+                      const SizedBox(width: 10),
+                      Text(state.title),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
           ),
           Expanded(
@@ -86,44 +94,27 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : _ListTurnView(
                     turns: filteredTurns,
-                    selectedState: selectedState,
-                    getStateTitle: _getStateTitle,
                   ),
           ),
         ],
       ),
     );
   }
+}
 
-  String _getStateTitle(String state) {
-    switch (state) {
-      case 'Todos':
-        return 'Todos los Turnos';
-      case 'Pendiente':
-        return 'Turnos Pendientes';
-      case 'Confirmado':
-        return 'Turnos Confirmados';
-      case 'En Progreso':
-        return 'Turnos en Progreso';
-      case 'Realizado':
-        return 'Turnos Completados';
-      case 'Cancelado':
-        return 'Turnos Cancelados';
-      default:
-        return '';
-    }
-  }
+class TurnState {
+  final String value;
+  final String title;
+  final IconData icon;
+
+  TurnState(this.value, this.title, this.icon);
 }
 
 class _ListTurnView extends StatelessWidget {
   final List<Turn> turns;
-  final String? selectedState;
-  final Function(String) getStateTitle;
 
   const _ListTurnView({
     required this.turns,
-    required this.selectedState,
-    required this.getStateTitle,
   });
 
   @override

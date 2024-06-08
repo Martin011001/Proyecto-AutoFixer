@@ -30,7 +30,7 @@ class NavigationButton extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 text,
-                style: const TextStyle(fontSize: 30, color: Colors.white), // Aumenta el tamaño del texto
+                style: const TextStyle(fontSize: 42, color: Colors.white), // Aumenta el tamaño del texto
               ),
             ],
           ),

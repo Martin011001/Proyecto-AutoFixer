@@ -74,18 +74,13 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Fondo blanco para toda la pantalla
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Detalles del Turno'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Card(
-          color: Colors.white, // Fondo blanco para la tarjeta
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
+
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -121,10 +116,18 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
                             _selectedState = newValue!;
                           });
                         },
+               
+                        icon: const Icon(Icons.arrow_drop_down), 
+                      
+                        iconSize: 26, 
+                        dropdownColor: Colors.white,
+                        iconEnabledColor: Colors.black,
+                        underline: Container(), 
                       ),
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 16),
                 Center(
                   child: ElevatedButton(
@@ -140,7 +143,7 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
               ],
             ),
           ),
-        ),
+        
       ),
     );
   }

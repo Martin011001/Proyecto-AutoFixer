@@ -20,19 +20,28 @@ class HomeScreenBase extends StatelessWidget {
 
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
-      title: Text(title),
+     title: Text(
+        title,
+        textAlign: TextAlign.center, // Centra el texto horizontalmente
+        style: const TextStyle(
+          fontSize: 24, // Tamaño de la fuente más grande
+          fontWeight: FontWeight.bold, // Texto en negrita
+        ),
+      ),
       automaticallyImplyLeading: true,
       actions: [
         IconButton(
             icon: const Icon(
               Icons.person,
-            ), // Tamaño del icono ajustado
+            ), 
+             iconSize: 42,
             onPressed: () {
               context.push('/cliente/editar/perfil/');
               // Acción del botón de usuario
             }),
         IconButton(
           icon: const Icon(Icons.logout),
+           iconSize: 42, 
           onPressed: () => _logout(context),
         )
       ],

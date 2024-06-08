@@ -10,6 +10,7 @@ import 'package:aplicacion_taller/widgets/spaced_column.dart';
 import 'package:aplicacion_taller/widgets/vehicle_selector.dart';
 import 'package:aplicacion_taller/widgets/service_selector.dart';
 import 'package:aplicacion_taller/widgets/date_time_selector.dart';
+import 'package:aplicacion_taller/widgets/message_form.dart';
 
 class TurnCreate extends StatefulWidget {
   const TurnCreate({super.key});
@@ -23,6 +24,7 @@ class _TurnCreateState extends State<TurnCreate> {
   Set<Service> _selectedServices = {};
   DateTime? _selectedDate;
   String? _selectedHour;
+  String? _message;
 
   late Future<void> _initialLoadFuture;
   List<Vehicle>? _vehicles;
@@ -48,6 +50,11 @@ class _TurnCreateState extends State<TurnCreate> {
   double _getSubtotal() {
     return _selectedServices.fold(
         0.0, (total, service) => total + service.price);
+  }
+
+  double _getDiasAproximados() {
+    return _selectedServices.fold(
+        0.0, (total, service) => total + service.diasAproximados);
   }
 
   Future<DateTime> _getEgresoEstimado(DateTime ingreso) async {
@@ -94,7 +101,7 @@ class _TurnCreateState extends State<TurnCreate> {
     }
   }
 
-// Método para obtener el nombre del día de la semana en inglés
+  // Método para obtener el nombre del día de la semana en inglés
   String _getWeekdayName(int weekday) {
     switch (weekday) {
       case DateTime.monday:
@@ -131,9 +138,18 @@ class _TurnCreateState extends State<TurnCreate> {
   Widget _buildSubtotal() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0),
-      child: Text(
-        'Subtotal: \$${_getSubtotal().toStringAsFixed(2)}',
-        style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Precio: \$${_getSubtotal().toStringAsFixed(2)}',
+            style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            'Dias habiles estimados: ${_getDiasAproximados().toStringAsFixed(0)}',
+            style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
     );
   }
@@ -167,7 +183,8 @@ class _TurnCreateState extends State<TurnCreate> {
         ingreso: ingreso,
         state: 'Pendiente',
         totalPrice: _getSubtotal(),
-        egreso: await _getEgresoEstimado(ingreso));
+        egreso: await _getEgresoEstimado(ingreso),
+        message: _message ?? '');
 
     try {
       await FirebaseFirestore.instance
@@ -175,14 +192,14 @@ class _TurnCreateState extends State<TurnCreate> {
           .add(newTurn.toFirestore());
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Turn created successfully'),
+          content: Text('Turno creado exitosamente'),
         ),
       );
       context.pop();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Failed to create turn'),
+          content: Text('Error al crear turno'),
         ),
       );
     }
@@ -202,6 +219,9 @@ class _TurnCreateState extends State<TurnCreate> {
         ServiceSelector(
           services: _services!,
           onServicesSelected: (x) => setState(() => _selectedServices = x),
+        ),
+        MessageForm(
+          onMessageChanged: (x) => setState(() => _message = x),
         ),
         _buildSubtotal(),
         _buildSubmitButton(),

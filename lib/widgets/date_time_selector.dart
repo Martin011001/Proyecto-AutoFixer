@@ -108,7 +108,7 @@ Future<void> _createDefaultBusinessHours() async {
 
       return reservedTimes;
     } catch (e) {
-      print("Error fetching reserved times: $e");
+      print("Error al recuperar los horarios reservados $e");
       return [];
     }
   }

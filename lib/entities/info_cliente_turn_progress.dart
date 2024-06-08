@@ -6,6 +6,7 @@ class TurnDetails {
   final String vehicleModel;
   final DateTime ingreso;
   final String turnState;
+  final DateTime egreso;
 
   TurnDetails({
     required this.userName,
@@ -13,9 +14,14 @@ class TurnDetails {
     required this.vehicleModel,
     required this.ingreso,
     required this.turnState,
+    required this.egreso,
   });
 
-   String get formattedDate {
+  String get ingresoDate {
     return DateFormat('dd MMM yyyy, hh:mm a').format(ingreso);
+  }
+
+  String get egresoDate {
+    return DateFormat('dd MMM yyyy, hh:mm a').format(egreso);
   }
 }

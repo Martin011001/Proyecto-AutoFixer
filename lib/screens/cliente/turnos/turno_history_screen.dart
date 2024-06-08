@@ -44,7 +44,7 @@ class ReparationHistoryScreen extends StatelessWidget {
               final data = snapshot.requireData;
               List<Turn> turns =
                   data.docs.map((doc) => Turn.fromFirestore(doc)).toList();
-                  print(data);
+              print(data);
 
               if (turns.isEmpty) {
                 return const Center(child: Text('No hay turnos disponibles'));
@@ -112,6 +112,23 @@ class _ListTurnView extends StatelessWidget {
   }
 }
 
+Icon _getStateIcon(String state) {
+  switch (state) {
+    case 'Pendiente':
+      return const Icon(Icons.pending, color: Colors.orange);
+    case 'Confirmado':
+      return const Icon(Icons.check_circle, color: Colors.green);
+    case 'En Progreso':
+      return const Icon(Icons.autorenew, color: Colors.blue);
+    case 'Realizado':
+      return const Icon(Icons.done, color: Colors.purple);
+    case 'Cancelado':
+      return const Icon(Icons.cancel, color: Colors.red);
+    default:
+      return const Icon(Icons.help, color: Colors.grey);
+  }
+}
+
 class _TurnItem extends StatelessWidget {
   final Turn turn;
 
@@ -159,24 +176,29 @@ class _TurnItem extends StatelessWidget {
 
             return Card(
               child: ListTile(
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Vehículo: $vehicleBrand $vehicleModel'),
-                    Text('Fecha de ingreso: $formattedInDate'),
-                    Text('Estado del turno: ${turn.state}'),
-                    Text('Fecha de retiro aproximada: $formattedOutDate'),
+                    Row(
+                      children: [
+                        const Text('🚗'),
+                        const SizedBox(
+                            width: 8), // Espacio entre el emoji y el texto
+                        Text('$vehicleBrand $vehicleModel'),
+                      ],
+                    ),
+                    _getStateIcon(turn.state),
                   ],
                 ),
                 onTap: () {
                   context.push('/cliente/turn-progress',
                       extra: TurnDetails(
-                        userName: userName,
-                        vehicleBrand: vehicleBrand,
-                        vehicleModel: vehicleModel,
-                        ingreso: turn.ingreso,
-                        turnState: turn.state,
-                      ));
+                          userName: userName,
+                          vehicleBrand: vehicleBrand,
+                          vehicleModel: vehicleModel,
+                          ingreso: turn.ingreso,
+                          turnState: turn.state,
+                          egreso: turn.egreso));
                 },
               ),
             );

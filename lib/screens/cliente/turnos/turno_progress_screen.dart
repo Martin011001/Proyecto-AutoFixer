@@ -4,8 +4,23 @@ import 'package:flutter/material.dart';
 class VerProgresoReparaciones extends StatelessWidget {
   final TurnDetails turnDetails;
 
-  const VerProgresoReparaciones({Key? key, required this.turnDetails})
-      : super(key: key);
+  const VerProgresoReparaciones({super.key, required this.turnDetails});
+  Icon _getStateIcon(String state) {
+    switch (state) {
+      case 'Pendiente':
+        return const Icon(Icons.pending, color: Colors.orange);
+      case 'Confirmado':
+        return const Icon(Icons.check_circle, color: Colors.green);
+      case 'En Progreso':
+        return const Icon(Icons.autorenew, color: Colors.blue);
+      case 'Realizado':
+        return const Icon(Icons.done, color: Colors.purple);
+      case 'Cancelado':
+        return const Icon(Icons.cancel, color: Colors.red);
+      default:
+        return const Icon(Icons.help, color: Colors.grey);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,20 +31,62 @@ class VerProgresoReparaciones extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                  'Vehículo: ${turnDetails.vehicleBrand} ${turnDetails.vehicleModel}',
-                  style: const TextStyle(fontSize: 18)),
-              Text('Fecha de ingreso: ${turnDetails.formattedDate}',
-                  style: const TextStyle(fontSize: 18)),
-              Text('Estado del turno: ${turnDetails.turnState}',
-                  style: const TextStyle(fontSize: 18)),
-              const SizedBox(height: 20),
-              _buildProgressIndicator(turnDetails.turnState),
-            ],
+          child: Card(
+            elevation: 8.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '🚗 Vehículo: ${turnDetails.vehicleBrand} ${turnDetails.vehicleModel}',
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Ingreso: ${turnDetails.ingresoDate}',
+                    style: const TextStyle(
+                        fontSize: 18, color: Color.fromARGB(172, 0, 0, 0)),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _getStateIcon(turnDetails.turnState),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${turnDetails.turnState}',
+                        style: const TextStyle(
+                            fontSize: 18, color: Color.fromARGB(172, 0, 0, 0)),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Retirar: ${turnDetails.egresoDate}',
+                    style: const TextStyle(
+                        fontSize: 18, color: Color.fromARGB(172, 0, 0, 0)),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildProgressIndicator(turnDetails.turnState),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -58,13 +115,29 @@ class VerProgresoReparaciones extends StatelessWidget {
         break;
     }
 
-    return SizedBox(
-      height: 20, // Altura personalizada del LinearProgressIndicator
-      child: LinearProgressIndicator(
-        value: progress,
-        backgroundColor: Colors.grey[300],
-        valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
-      ),
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: LinearProgressIndicator(
+            value: progress,
+            backgroundColor: Colors.grey[300],
+            valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+            minHeight: 20, // Altura personalizada del LinearProgressIndicator
+          ),
+        ),
+        Positioned.fill(
+          child: Center(
+            child: Text(
+              '${(progress * 100).round()}%',
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -165,7 +165,7 @@ class _TurnCreateState extends State<TurnCreate> {
         vehicleId: _selectedVehicle!.id,
         services: _selectedServices.map((service) => service.id).toList(),
         ingreso: ingreso,
-        state: 'pending',
+        state: 'Pendiente',
         totalPrice: _getSubtotal(),
         egreso: await _getEgresoEstimado(ingreso));
 

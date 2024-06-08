@@ -52,13 +52,13 @@ class ReparationHistoryScreen extends StatelessWidget {
 
               List<Turn> inProgressTurns = turns
                   .where((turn) =>
-                      turn.state == 'pending' ||
-                      turn.state == 'confirm' ||
-                      turn.state == 'in progress')
+                      turn.state == 'Pendiente' ||
+                      turn.state == 'Confirmado' ||
+                      turn.state == 'En Progreso')
                   .toList();
 
               List<Turn> doneTurns =
-                  turns.where((turn) => turn.state == 'done').toList();
+                  turns.where((turn) => turn.state == 'Realizado').toList();
 
               return _ListTurnView(
                 inProgressTurns: inProgressTurns,

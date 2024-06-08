@@ -1,6 +1,5 @@
 import 'package:aplicacion_taller/entities/info_cliente_turn_progress.dart';
 import 'package:flutter/material.dart';
-import 'package:aplicacion_taller/entities/turn.dart';
 
 class VerProgresoReparaciones extends StatelessWidget {
   final TurnDetails turnDetails;

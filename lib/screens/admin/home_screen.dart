@@ -21,11 +21,11 @@ class AdminHomeScreen extends StatelessWidget {
           route: '/administrador/perfiles',
           icon: Icon(Icons.person, size: 115, color: Colors.white),
         ),
-        NavigationButton(
-          text: 'Metricas',
-          route: '/administrador/metricas',
-          icon: Icon(Icons.bar_chart, size: 115, color: Colors.white),
-        ),
+        //NavigationButton(
+        //  text: 'Metricas',
+        //  route: '/administrador/metricas',
+        //  icon: Icon(Icons.bar_chart, size: 115, color: Colors.white),
+        //),
         NavigationButton(
           text: 'Servicios',
           route: '/administrador/servicios',

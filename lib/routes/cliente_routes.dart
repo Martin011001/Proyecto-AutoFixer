@@ -1,20 +1,18 @@
 import 'package:aplicacion_taller/entities/info_cliente_turn_progress.dart';
-import 'package:aplicacion_taller/screens/cliente/EditCliente.dart';
-import 'package:aplicacion_taller/screens/cliente/progress_reparation.dart';
+import 'package:aplicacion_taller/screens/cliente/cliente_edit.dart';
+import 'package:aplicacion_taller/screens/cliente/turnos/turno_progress_screen.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:aplicacion_taller/screens/cliente/home_screen.dart';
-import 'package:aplicacion_taller/screens/cliente/select_service_screen.dart';
-import 'package:aplicacion_taller/screens/cliente/reparaciones_screen.dart';
+import 'package:aplicacion_taller/screens/cliente/turnos/turno_history_screen.dart';
 import 'package:aplicacion_taller/screens/cliente/vehiculo/list_screen.dart';
-import 'package:aplicacion_taller/screens/cliente/confirm_turn_screen.dart';
-import 'package:aplicacion_taller/screens/cliente/thank_you_screen.dart';
+import 'package:aplicacion_taller/screens/cliente/turnos/turno_confirm_screen.dart';
+import 'package:aplicacion_taller/screens/cliente/turnos/turno_thankyou_screen.dart';
 import 'package:aplicacion_taller/screens/cliente/vehiculo/register_screen.dart';
 import 'package:aplicacion_taller/screens/cliente/vehiculo/details_screen.dart';
 import 'package:aplicacion_taller/screens/cliente/vehiculo/edit_screen.dart';
-import 'package:aplicacion_taller/screens/cliente/calander.dart';
 
-import 'package:aplicacion_taller/screens/cliente/turn_create_screen.dart';
+import 'package:aplicacion_taller/screens/cliente/turnos/turno_create_screen.dart';
 import 'package:aplicacion_taller/entities/vehicle.dart';
 
 final clienteRoutes = [
@@ -26,18 +24,10 @@ final clienteRoutes = [
     path: '/cliente/reparations',
     builder: (context, state) => const ReparationHistoryScreen(),
   ),
-  GoRoute(
-    path: '/cliente/calendar',
-    builder: (context, state) => const RepairRequestCalendar(),
-  ),
-  // GoRoute(
-  //   path: '/cliente/repair-form',
-  //   builder: (context, state) => RepairRequestFormScreen(),
-  // ),
-  GoRoute(
-    path: '/cliente/turns/create',
-    builder: (context, state) => const SeleccionarServicio(),
-  ),
+  //GoRoute(
+  //  path: '/cliente/turns/create',
+  //  builder: (context, state) => const SeleccionarServicio(),
+  //),
   GoRoute(
     path: '/cliente/turns/confirm/:turnId',
     builder: (context, state) {
@@ -72,7 +62,7 @@ final clienteRoutes = [
     path: '/cliente/turns/create/refactor',
     builder: (context, state) => TurnCreate(),
   ),
-   
+
    GoRoute(
     path: '/cliente/editar/perfil',
     builder: (context, state) => const EditUserScreen(),

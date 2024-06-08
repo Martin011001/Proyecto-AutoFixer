@@ -1,18 +1,14 @@
+import 'package:go_router/go_router.dart';
+import 'package:aplicacion_taller/entities/user.dart';
 import 'package:aplicacion_taller/entities/turn.dart';
 import 'package:aplicacion_taller/screens/admin/turnos/turnos_details_screen.dart';
 import 'package:aplicacion_taller/screens/admin/servicios/add_services_screen.dart';
-import 'package:go_router/go_router.dart';
 import 'package:aplicacion_taller/screens/admin/home_screen.dart';
 import 'package:aplicacion_taller/screens/admin/perfiles/home_screen.dart';
 import 'package:aplicacion_taller/screens/admin/perfiles/profile_screen.dart';
-import 'package:aplicacion_taller/screens/admin/solicitudAdmin_screen.dart';
 import 'package:aplicacion_taller/screens/admin/servicios/_servicios_screen.dart';
-import 'package:aplicacion_taller/screens/admin/_metricas_screen.dart';
-import 'package:aplicacion_taller/screens/admin/_reparaciones_screen.dart';
 import 'package:aplicacion_taller/screens/admin/turnos/turnos_list_screen.dart';
-import 'package:aplicacion_taller/screens/admin/business_hours_screen.dart';
-
-import 'package:aplicacion_taller/entities/user.dart';
+import 'package:aplicacion_taller/screens/admin/config/business_hours_screen.dart';
 
 final adminRoutes = [
   GoRoute(
@@ -31,22 +27,18 @@ final adminRoutes = [
     path: '/administrador/turnos',
     builder: (context, state) => const TurnosScreen(),
   ),
-  GoRoute(
-    path: '/administrador/reparaciones',
-    builder: (context, state) => const ReparacionesScreen(),
-  ),
+  //GoRoute(
+  //  path: '/administrador/reparaciones',
+  //  builder: (context, state) => const ReparacionesScreen(),
+  //),
   GoRoute(
     path: '/administrador/servicios',
     builder: (context, state) => const ServiciosScreen(),
   ),
-  GoRoute(
-    path: '/administrador/metricas',
-    builder: (context, state) => const MetricasScreen(),
-  ),
-  GoRoute(
-    path: '/administrador/solicitud',
-    builder: (context, state) => const SolicitudAdminScreen(),
-  ),
+  //GoRoute(
+  //  path: '/administrador/metricas',
+  //  builder: (context, state) => const MetricasScreen(),
+  //),
   // GoRoute(
   //   path: '/administrador/servicios-detail',
   //   builder: (context, state) => ServicieDetailScreen(service: state.extra as Service),

@@ -122,7 +122,7 @@ class VerProgresoReparaciones extends StatelessWidget {
           child: LinearProgressIndicator(
             value: progress,
             backgroundColor: Colors.grey[300],
-            valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+            valueColor: const AlwaysStoppedAnimation<Color>(Color.fromARGB(206, 12, 60, 99)),
             minHeight: 20, // Altura personalizada del LinearProgressIndicator
           ),
         ),

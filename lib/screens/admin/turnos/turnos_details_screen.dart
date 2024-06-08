@@ -1,11 +1,12 @@
-import 'package:aplicacion_taller/entities/turn.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:aplicacion_taller/entities/turn.dart';
 
 class TurnoDetailsScreen extends StatefulWidget {
   final Turn turn;
-  const TurnoDetailsScreen({super.key, required this.turn});
+
+  const TurnoDetailsScreen({Key? key, required this.turn}) : super(key: key);
 
   @override
   _TurnoDetailsScreenState createState() => _TurnoDetailsScreenState();
@@ -13,14 +14,21 @@ class TurnoDetailsScreen extends StatefulWidget {
 
 class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
   late String _selectedState;
-  final List<String> _states = ['Pendiente', 'Confirmado', 'En Progreso', 'Realizado', 'Cancelado'];
+  final List<String> _states = [
+    'Pendiente',
+    'Confirmado',
+    'En Progreso',
+    'Realizado',
+    'Cancelado'
+  ];
   String? _vehicleDetails;
   String? _userDetails;
 
   @override
   void initState() {
     super.initState();
-    _selectedState = _states.contains(widget.turn.state) ? widget.turn.state : _states[0];
+    _selectedState =
+        _states.contains(widget.turn.state) ? widget.turn.state : _states[0];
     _fetchVehicleDetails();
     _fetchUserDetails();
   }
@@ -33,7 +41,8 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
           .get();
       if (snapshot.exists) {
         setState(() {
-          _vehicleDetails = '${snapshot['model']} - ${snapshot['brand']} - Patente: ${snapshot['licensePlate']}';
+          _vehicleDetails =
+              '${snapshot['model']} - ${snapshot['brand']} - Patente: ${snapshot['licensePlate']}';
         });
       }
     } catch (e) {
@@ -78,72 +87,81 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
       appBar: AppBar(
         title: const Text('Detalles del Turno'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-
+      body: SingleChildScrollView(
+        child: Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildDetailRow(
-                  'Fecha de Ingreso',
-                  DateFormat('dd/MM/yyyy').format(widget.turn.ingreso),
-                ),
-                const SizedBox(height: 16),
-                _buildDetailRow('Detalles del Vehículo', _vehicleDetails),
-                const SizedBox(height: 16),
-                _buildDetailRow('Usuario', _userDetails),
-                const SizedBox(height: 16),
-                Row(
+            child: Card(
+              elevation: 8.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 16.0, horizontal: 24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Estado:',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    _buildDetailRow(
+                      'Fecha de Ingreso',
+                      DateFormat('dd/MM/yyyy').format(widget.turn.ingreso),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: DropdownButton<String>(
-                        value: _selectedState,
-                        items: _states.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        onChanged: (newValue) {
-                          setState(() {
-                            _selectedState = newValue!;
-                          });
-                        },
-               
-                        icon: const Icon(Icons.arrow_drop_down), 
-                      
-                        iconSize: 26, 
-                        dropdownColor: Colors.white,
-                        iconEnabledColor: Colors.black,
-                        underline: Container(), 
+                    const SizedBox(height: 10),
+                    _buildDetailRow('Detalles del Vehículo', _vehicleDetails),
+                    const SizedBox(height: 10),
+                    _buildDetailRow('Usuario', _userDetails),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Estado:',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(width: 8),
+                        DropdownButton<String>(
+                          value: _selectedState,
+                          items: _states.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            setState(() {
+                              _selectedState = newValue!;
+                            });
+                          },
+                          icon: const Icon(Icons.arrow_drop_down),
+                          iconSize: 26,
+                          dropdownColor: Colors.white,
+                          iconEnabledColor: Colors.black,
+                          underline: Container(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    _buildDetailRow('Comentarios',
+                        ''), // Agrega esta línea para los comentarios
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: _updateTurnState,
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
+                      child: const Text('Actualizar Estado'),
                     ),
                   ],
                 ),
-
-                const SizedBox(height: 16),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: _updateTurnState,
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text('Actualizar Estado'),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        
+        ),
       ),
     );
   }
@@ -152,11 +170,14 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
     return detail == null
         ? const CircularProgressIndicator()
         : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 '$title: ',
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   detail,

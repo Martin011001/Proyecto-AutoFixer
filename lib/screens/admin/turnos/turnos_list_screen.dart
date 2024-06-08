@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:aplicacion_taller/entities/turn.dart';
-import 'package:aplicacion_taller/entities/user.dart';
+
+import 'package:aplicacion_taller/widgets/turn_item.dart';
 
 class TurnosScreen extends StatefulWidget {
-  const TurnosScreen({Key? key}) : super(key: key);
+  const TurnosScreen({super.key});
 
   @override
   _TurnosScreenState createState() => _TurnosScreenState();
@@ -124,67 +123,9 @@ class _ListTurnView extends StatelessWidget {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
-        ...turns.map((turn) => _TurnItem(turn: turn)).toList(),
+        ...turns.map((turn) => TurnItem(turn: turn)),
         if (turns.isNotEmpty) const Divider(),
       ],
     );
-  }
-}
-
-class _TurnItem extends StatelessWidget {
-  final Turn turn;
-
-  const _TurnItem({required this.turn});
-
-  @override
-  Widget build(BuildContext context) {
-    String formattedDate =
-        DateFormat('dd MMM yyyy, hh:mm a').format(turn.ingreso);
-
-    return FutureBuilder<DocumentSnapshot>(
-      future:
-          FirebaseFirestore.instance.collection('users').doc(turn.userId).get(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return const Text('Error al cargar usuario');
-        }
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const Text('Usuario no encontrado');
-        }
-
-        User user = User.fromFirestore(snapshot.data!);
-
-        return Card(
-          child: ListTile(
-            leading: _getStateIcon(turn.state),
-            title: Text(user.name),
-            subtitle: Text(formattedDate),
-            onTap: () {
-              context.push('/administrador/turno-detail', extra: turn);
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  Icon _getStateIcon(String state) {
-    switch (state) {
-      case 'Pendiente':
-        return const Icon(Icons.pending, color: Colors.orange);
-      case 'Confirmado':
-        return const Icon(Icons.check_circle, color: Colors.green);
-      case 'En Progreso':
-        return const Icon(Icons.autorenew, color: Colors.blue);
-      case 'Realizado':
-        return const Icon(Icons.done, color: Colors.purple);
-      case 'Cancelado':
-        return const Icon(Icons.cancel, color: Colors.red);
-      default:
-        return const Icon(Icons.help, color: Colors.grey);
-    }
   }
 }

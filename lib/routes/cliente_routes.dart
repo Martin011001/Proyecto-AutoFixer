@@ -60,15 +60,16 @@ final clienteRoutes = [
   // WIP
   GoRoute(
     path: '/cliente/turns/create/refactor',
-    builder: (context, state) => TurnCreate(),
+    builder: (context, state) => const TurnCreate(),
   ),
 
-   GoRoute(
+  GoRoute(
     path: '/cliente/editar/perfil',
     builder: (context, state) => const EditUserScreen(),
   ),
   GoRoute(
     path: '/cliente/turn-progress',
-    builder: (context, state) => VerProgresoReparaciones(turnDetails: state.extra as TurnDetails),
+    builder: (context, state) =>
+        VerProgresoReparaciones(turnDetails: state.extra as TurnDetails),
   ),
 ];

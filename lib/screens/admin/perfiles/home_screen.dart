@@ -5,13 +5,14 @@ import 'package:go_router/go_router.dart';
 import 'package:aplicacion_taller/entities/user.dart';
 
 class PerfilesScreen extends StatelessWidget {
-  const PerfilesScreen({Key? key});
+  const PerfilesScreen({super.key});
 
-    Future<void> _deleteUser(BuildContext context, String userId) async {
+  Future<void> _deleteUser(BuildContext context, String userId) async {
     try {
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         // Referencia al documento del usuario
-        DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+        DocumentReference userRef =
+            FirebaseFirestore.instance.collection('users').doc(userId);
 
         // Obtén los vehículos asociados al usuario
         QuerySnapshot vehiclesSnapshot = await FirebaseFirestore.instance
@@ -55,7 +56,8 @@ class PerfilesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final CollectionReference usersRef = FirebaseFirestore.instance.collection('users');
+    final CollectionReference usersRef =
+        FirebaseFirestore.instance.collection('users');
 
     return Scaffold(
       appBar: AppBar(
@@ -67,27 +69,32 @@ class PerfilesScreen extends StatelessWidget {
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             print("Error: ${snapshot.error}");
-            return Center(child: Text('Something went wrong: ${snapshot.error}'));
+            return Center(
+                child: Text('Something went wrong: ${snapshot.error}'));
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final users = snapshot.data!.docs.map((doc) => User.fromFirestore(doc)).toList();
+          final users = snapshot.data!.docs
+              .map((doc) => User.fromFirestore(doc))
+              .toList();
 
           return ListView.builder(
             itemCount: users.length,
             itemBuilder: (context, index) {
               final user = users[index];
               return Card(
-                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: ListTile(
                   title: Text(user.name),
                   subtitle: Text(user.phone),
                   onTap: () {
                     // Navigate to profile page using go_router
-                    context.push('/administrador/perfiles/profile', extra: user);
+                    context.push('/administrador/perfiles/profile',
+                        extra: user);
                   },
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
@@ -98,7 +105,8 @@ class PerfilesScreen extends StatelessWidget {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: const Text('Confirm Deletion'),
-                            content: Text('Are you sure you want to delete ${user.name}?'),
+                            content: Text(
+                                'Are you sure you want to delete ${user.name}?'),
                             actions: [
                               TextButton(
                                 onPressed: () {

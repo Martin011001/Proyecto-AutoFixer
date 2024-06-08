@@ -13,7 +13,13 @@ class TurnosScreen extends StatefulWidget {
 
 class _TurnosScreenState extends State<TurnosScreen> {
   String? selectedState;
-  final List<String> states = ['Pendiente', 'Confirmado', 'En Progreso', 'Realizado', 'Cancelado'];
+  final List<String> states = [
+    'Pendiente',
+    'Confirmado',
+    'En Progreso',
+    'Realizado',
+    'Cancelado'
+  ];
   List<Turn> allTurns = [];
   bool isLoading = true;
 
@@ -25,7 +31,8 @@ class _TurnosScreenState extends State<TurnosScreen> {
 
   void _fetchTurns() async {
     try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('turns').get();
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('turns').get();
       setState(() {
         allTurns = snapshot.docs.map((doc) => Turn.fromFirestore(doc)).toList();
         isLoading = false;

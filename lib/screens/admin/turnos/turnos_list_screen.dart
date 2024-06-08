@@ -15,9 +15,36 @@ class TurnosScreen extends StatefulWidget {
 class _TurnosScreenState extends State<TurnosScreen> {
   String? selectedState;
   final List<String> states = ['Pendiente', 'Confirmado', 'En Progreso', 'Realizado', 'Cancelado'];
+  List<Turn> allTurns = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchTurns();
+  }
+
+  void _fetchTurns() async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('turns').get();
+      setState(() {
+        allTurns = snapshot.docs.map((doc) => Turn.fromFirestore(doc)).toList();
+        isLoading = false;
+      });
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      // Handle error appropriately here
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    List<Turn> filteredTurns = selectedState != null
+        ? allTurns.where((turn) => turn.state == selectedState).toList()
+        : allTurns;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Turnos'),
@@ -44,33 +71,13 @@ class _TurnosScreenState extends State<TurnosScreen> {
             }).toList(),
           ),
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('turns').snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return const Center(child: Text('Algo salió mal'));
-                }
-
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                final data = snapshot.requireData;
-
-                List<Turn> turns =
-                    data.docs.map((doc) => Turn.fromFirestore(doc)).toList();
-
-                List<Turn> filteredTurns = selectedState != null
-                    ? turns.where((turn) => turn.state == selectedState).toList()
-                    : [];
-
-                return _ListTurnView(
-                  turns: filteredTurns,
-                  selectedState: selectedState,
-                  getStateTitle: _getStateTitle,
-                );
-              },
-            ),
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _ListTurnView(
+                    turns: filteredTurns,
+                    selectedState: selectedState,
+                    getStateTitle: _getStateTitle,
+                  ),
           ),
         ],
       ),

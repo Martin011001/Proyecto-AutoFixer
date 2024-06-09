@@ -7,47 +7,6 @@ import 'package:aplicacion_taller/entities/user.dart';
 class PerfilesScreen extends StatelessWidget {
   const PerfilesScreen({super.key});
 
-  Future<void> _deleteUser(BuildContext context, String userId) async {
-    try {
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        // Referencia al documento del usuario
-        DocumentReference userRef =
-            FirebaseFirestore.instance.collection('users').doc(userId);
-
-        // Obtén los vehículos asociados al usuario
-        QuerySnapshot vehiclesSnapshot = await FirebaseFirestore.instance
-            .collection('vehiculos')
-            .where('userID', isEqualTo: userId)
-            .get();
-
-        // Elimina los vehículos y sus turnos asociados
-        for (DocumentSnapshot vehicleDoc in vehiclesSnapshot.docs) {
-          // Referencia al documento del vehículo
-          DocumentReference vehicleRef = vehicleDoc.reference;
-
-          transaction.delete(vehicleRef);
-        }
-         QuerySnapshot turnosSnapshot = await FirebaseFirestore.instance
-              .collection('turns')
-              .where('userId', isEqualTo: userId)
-              .get();
-              
-           for (DocumentSnapshot turnoDoc in turnosSnapshot.docs) {
-            transaction.delete(turnoDoc.reference);
-          }
-        // Elimina el usuario
-        transaction.delete(userRef);
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Usuario eliminado exitosamente')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al eliminar el usuario: $e')),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,38 +50,6 @@ class PerfilesScreen extends StatelessWidget {
                     context.push('/administrador/perfiles/profile',
                         extra: user);
                   },
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      // Show confirmation dialog
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Confirmar eliminación'),
-                            content: Text(
-                                'Seguro que desea eliminar el usuario ${user.name}?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Cancelar'),
-                              ),
-                              TextButton(
-                                onPressed: () async {
-                                  // Implement delete functionality
-                                  await _deleteUser(context, user.id);
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Eliminar'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
                 ),
               );
             },

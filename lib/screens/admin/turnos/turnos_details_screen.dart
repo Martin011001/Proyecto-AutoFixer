@@ -21,7 +21,9 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
     'Realizado',
     'Cancelado'
   ];
-  String? _vehicleDetails;
+  String? _vehicleBrand;
+  String? _vehicleModel;
+  String? _vehicleLicensePlate;
   String? _userDetails;
 
   @override
@@ -41,8 +43,9 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
           .get();
       if (snapshot.exists) {
         setState(() {
-          _vehicleDetails =
-              '${snapshot['model']} - ${snapshot['brand']} - Patente: ${snapshot['licensePlate']}';
+          _vehicleBrand = snapshot['brand'];
+          _vehicleModel = snapshot['model'];
+          _vehicleLicensePlate = snapshot['licensePlate'];
         });
       }
     } catch (e) {
@@ -109,7 +112,11 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
                       DateFormat('dd/MM/yyyy').format(widget.turn.ingreso),
                     ),
                     const SizedBox(height: 10),
-                    _buildDetailRow('Detalles del Vehículo', _vehicleDetails),
+                    _buildDetailRow('Marca del Vehículo', _vehicleBrand),
+                    const SizedBox(height: 10),
+                    _buildDetailRow('Modelo del Vehículo', _vehicleModel),
+                    const SizedBox(height: 10),
+                    _buildDetailRow('Patente del Vehículo', _vehicleLicensePlate),
                     const SizedBox(height: 10),
                     _buildDetailRow('Usuario', _userDetails),
                     const SizedBox(height: 10),
@@ -119,7 +126,7 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
                         const Text(
                           'Estado:',
                           style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(width: 8),
                         DropdownButton<String>(
@@ -127,7 +134,7 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
                           items: _states.map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value),
+                              child: Text(value, style: TextStyle(fontSize: 16)),
                             );
                           }).toList(),
                           onChanged: (newValue) {
@@ -136,7 +143,7 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
                             });
                           },
                           icon: const Icon(Icons.arrow_drop_down),
-                          iconSize: 26,
+                          iconSize: 24,
                           dropdownColor: Colors.white,
                           iconEnabledColor: Colors.black,
                           underline: Container(),
@@ -144,8 +151,8 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    _buildDetailRow('Comentarios',
-                        ''), // Agrega esta línea para los comentarios
+                    if (widget.turn.message.isNotEmpty)
+                      _buildDetailRow('Comentarios', widget.turn.message),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: _updateTurnState,
@@ -169,20 +176,20 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
   Widget _buildDetailRow(String title, String? detail) {
     return detail == null
         ? const CircularProgressIndicator()
-        : Row(
+        : Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                '$title: ',
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                '$title:',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  detail,
-                  style: const TextStyle(fontSize: 18, color: Colors.black87),
-                ),
+              const SizedBox(height: 4),
+              Text(
+                detail,
+                style: const TextStyle(fontSize: 16, color: Colors.black87),
+                textAlign: TextAlign.center,
               ),
             ],
           );

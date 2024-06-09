@@ -1,4 +1,5 @@
 import 'package:aplicacion_taller/entities/service.dart';
+import 'package:aplicacion_taller/screens/admin/servicios/editar_servicios_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
@@ -97,7 +98,14 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                         children: [
                           ElevatedButton(
                             onPressed: () {
-                              // Acción para editar
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  // podria agregarse en el router
+                                  builder: (context) =>
+                                      ServiceEditScreen(service: service),
+                                ),
+                              );
                             },
                             child: const Text('Editar'),
                           ),

@@ -3,13 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:aplicacion_taller/entities/turn.dart';
 
 class ReparationHistoryScreen extends StatelessWidget {
   static const String name = 'reparation-history-screen';
 
-  const ReparationHistoryScreen({Key? key}) : super(key: key);
+  const ReparationHistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -136,10 +135,6 @@ class _TurnItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String formattedInDate =
-        DateFormat('dd MMM yyyy, hh:mm a').format(turn.ingreso);
-    String formattedOutDate =
-        DateFormat('dd MMM yyyy, hh:mm a').format(turn.egreso);
     return FutureBuilder<Map<String, dynamic>>(
       future: _getUserDetails(turn.userId),
       builder: (context, userSnapshot) {

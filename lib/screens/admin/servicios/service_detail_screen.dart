@@ -20,6 +20,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
         .get();
     return Service.fromFirestore(doc);
   }
+
   Future<void> eliminarServicio(BuildContext context) async {
     try {
       await FirebaseFirestore.instance
@@ -48,7 +49,8 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text('Error al traer los detalles del servicio'));
+            return const Center(
+                child: Text('Error al traer los detalles del servicio'));
           } else if (!snapshot.hasData) {
             return const Center(child: Text('Servicio no encontrado'));
           }
@@ -58,38 +60,57 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Nombre servicio: ${service.name}',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Precio: \$${service.price.toStringAsFixed(2)}',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              child: Card(
+                elevation: 8.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          // Acción para editar
-                        },
-                        child: const Text('Editar'),
+                      const Text('Servicio',
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          )),
+                      Text(
+                        'Nombre servicio: ${service.name}',
+                        style: const TextStyle(fontSize: 18),
                       ),
-                      const SizedBox(width: 10),
-                      ElevatedButton(
-                          onPressed: () => eliminarServicio(context),
-                        // ignore: sort_child_properties_last
-                        child: const Text('Eliminar'),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Precio: \$${service.price.toStringAsFixed(2)}',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Dias aproximados: ${service.diasAproximados}',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              // Acción para editar
+                            },
+                            child: const Text('Editar'),
+                          ),
+                          const SizedBox(width: 10),
+                          ElevatedButton(
+                            onPressed: () => eliminarServicio(context),
+                            child: const Text('Eliminar'),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
           );

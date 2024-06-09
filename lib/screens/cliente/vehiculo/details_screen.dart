@@ -30,8 +30,7 @@ class VehicleDetailsScreen extends StatelessWidget {
 
       // Redirige a la página principal después de eliminar
       // ignore: use_build_context_synchronously
-      context.go(
-          '/cliente/vehiculo/list'); // Ajusta la ruta según tu configuración
+      context.pop(); // Ajusta la ruta según tu configuración
 
       // Mostrar mensaje de éxito
       // ignore: use_build_context_synchronously
@@ -72,7 +71,7 @@ class VehicleDetailsScreen extends StatelessWidget {
                       children: [
                         const WidgetSpan(
                           child: Icon(
-                            Icons.document_scanner_outlined,
+                            Icons.car_repair_rounded,
                             size: 30,
                             color: Colors.black,
                           ),

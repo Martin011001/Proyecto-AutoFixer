@@ -68,7 +68,7 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
   Widget _buildAutoCard(BuildContext context, Vehicle vehiculo) {
     return Card(
       child: ListTile(
-        title: Text(vehiculo.brand),
+       title: Text('🚗 ${vehiculo.brand} ${vehiculo.model}'),
         trailing: const Icon(Icons.arrow_forward_ios),
         onTap: () {
           context.push('/cliente/vehiculo/details', extra: vehiculo);

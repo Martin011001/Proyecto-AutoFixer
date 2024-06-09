@@ -30,7 +30,8 @@ class VehicleDetailsScreen extends StatelessWidget {
 
       // Redirige a la página principal después de eliminar
       // ignore: use_build_context_synchronously
-      context.go('/cliente/vehiculo/list'); // Ajusta la ruta según tu configuración
+      context.go(
+          '/cliente/vehiculo/list'); // Ajusta la ruta según tu configuración
 
       // Mostrar mensaje de éxito
       // ignore: use_build_context_synchronously
@@ -66,9 +67,26 @@ class VehicleDetailsScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    '${vehiculo.brand} ${vehiculo.model}',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        const WidgetSpan(
+                          child: Icon(
+                            Icons.document_scanner_outlined,
+                            size: 30,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' ${vehiculo.brand} ${vehiculo.model}',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   Text(
                     'Modelo: ${vehiculo.model}',
@@ -92,7 +110,8 @@ class VehicleDetailsScreen extends StatelessWidget {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          context.push('/cliente/vehiculo/edit', extra: vehiculo);
+                          context.push('/cliente/vehiculo/edit',
+                              extra: vehiculo);
                         },
                         child: const Text('Editar'),
                       ),
@@ -105,17 +124,20 @@ class VehicleDetailsScreen extends StatelessWidget {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: const Text('Confirmar Eliminación'),
-                                content: const Text('¿Estás seguro de que deseas eliminar este vehículo?'),
+                                content: const Text(
+                                    '¿Estás seguro de que deseas eliminar este vehículo?'),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop(false); // No elimina el vehículo
+                                      Navigator.of(context)
+                                          .pop(false); // No elimina el vehículo
                                     },
                                     child: const Text('Cancelar'),
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop(true); // Confirma la eliminación del vehículo
+                                      Navigator.of(context).pop(
+                                          true); // Confirma la eliminación del vehículo
                                     },
                                     child: const Text('Eliminar'),
                                   ),

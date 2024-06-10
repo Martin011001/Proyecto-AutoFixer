@@ -250,7 +250,7 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _ListTurnView(
-                    turns: filteredTurns,
+                    turns: filteredTurns, actualizadoPagina: _fetchTurns
                   ),
           ),
         ],
@@ -269,16 +269,17 @@ class TurnState {
 
 class _ListTurnView extends StatelessWidget {
   final List<Turn> turns;
+  final Function actualizadoPagina;
 
   const _ListTurnView({
-    required this.turns,
+    required this.turns, required this.actualizadoPagina,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        ...turns.map((turn) => TurnItem(turn: turn)),
+        ...turns.map((turn) => TurnItem(turn: turn, actualizadoPagina: actualizadoPagina)),
         if (turns.isNotEmpty) const Divider(),
       ],
     );

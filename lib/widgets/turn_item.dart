@@ -1,5 +1,6 @@
 import 'package:aplicacion_taller/entities/turn.dart';
 import 'package:aplicacion_taller/entities/user.dart';
+import 'package:aplicacion_taller/screens/admin/turnos/turnos_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -7,8 +8,10 @@ import 'package:intl/intl.dart';
 
 class TurnItem extends StatelessWidget {
   final Turn turn;
+  final Function actualizadoPagina;
 
-  const TurnItem({required this.turn});
+  const TurnItem(
+      {super.key, required this.turn, required this.actualizadoPagina});
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +40,14 @@ class TurnItem extends StatelessWidget {
             leading: _getStateIcon(turn.state),
             title: Text(user.name),
             subtitle: Text(formattedDate),
-            onTap: () {
-              context.push('/administrador/turno-detail', extra: turn);
+            onTap: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TurnoDetailsScreen(turn: turn),
+                ),
+              );
+              actualizadoPagina();
             },
           ),
         );

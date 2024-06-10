@@ -79,7 +79,8 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Estado actualizado con éxito')),
       );
-      context.push('/administrador/turnos');
+      context.pop();
+      context.pop();
     } catch (e) {
       print('Error al actualizar el estado del turno: $e');
     }

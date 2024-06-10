@@ -66,27 +66,12 @@ class VehicleDetailsScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        const WidgetSpan(
-                          child: Icon(
-                            Icons.car_repair_rounded,
-                            size: 30,
-                            color: Colors.black,
-                          ),
-                        ),
-                        TextSpan(
-                          text: ' ${vehiculo.brand} ${vehiculo.model}',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      ],
-                    ),
+                  Text(
+                    '🚗 Vehículo: ${vehiculo.brand} ${vehiculo.model}',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ),
+                  const Divider(),
                   Text(
                     'Modelo: ${vehiculo.model}',
                     style: const TextStyle(fontSize: 20),

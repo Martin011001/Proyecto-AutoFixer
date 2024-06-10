@@ -9,7 +9,7 @@ class ClienteHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: HomeScreenBase(
-        title: 'Inicio: cliente',
+        title: 'AutoFixer',
         buttons: [
           NavigationButton(
             text: 'Solicitar turno',

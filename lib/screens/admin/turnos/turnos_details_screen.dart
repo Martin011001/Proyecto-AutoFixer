@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:aplicacion_taller/entities/turn.dart';
 
@@ -78,6 +79,7 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Estado actualizado con éxito')),
       );
+      context.push('/administrador/turnos');
     } catch (e) {
       print('Error al actualizar el estado del turno: $e');
     }

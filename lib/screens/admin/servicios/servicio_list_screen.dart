@@ -2,7 +2,7 @@ import 'package:aplicacion_taller/entities/service.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
-import 'service_detail_screen.dart';
+import 'package:aplicacion_taller/screens/admin/servicios/servicio_details_screen.dart';
 
 class ServiciosScreen extends StatelessWidget {
   const ServiciosScreen({super.key});
@@ -42,7 +42,8 @@ class ServiciosScreen extends StatelessWidget {
                   // Navegar a la pantalla de detalles del servicio
                   Navigator.push(
                     context,
-                    MaterialPageRoute( // podria agregarse en el router
+                    MaterialPageRoute(
+                      // podria agregarse en el router
                       builder: (context) =>
                           ServiceDetailScreen(serviceId: service.id),
                     ),

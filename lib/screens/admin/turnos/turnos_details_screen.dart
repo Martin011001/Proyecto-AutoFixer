@@ -110,15 +110,16 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     _buildDetailRow(
-                      'Fecha de Ingreso',
+                      'Fecha de ingreso',
                       DateFormat('dd/MM/yyyy').format(widget.turn.ingreso),
                     ),
                     const SizedBox(height: 10),
-                    _buildDetailRow('Marca del Vehículo', _vehicleBrand),
+                    _buildDetailRow('Marca del vehículo', _vehicleBrand),
                     const SizedBox(height: 10),
-                    _buildDetailRow('Modelo del Vehículo', _vehicleModel),
+                    _buildDetailRow('Modelo del vehículo', _vehicleModel),
                     const SizedBox(height: 10),
-                    _buildDetailRow('Patente del Vehículo', _vehicleLicensePlate),
+                    _buildDetailRow(
+                        'Patente del vehículo', _vehicleLicensePlate),
                     const SizedBox(height: 10),
                     _buildDetailRow('Usuario', _userDetails),
                     const SizedBox(height: 10),
@@ -136,7 +137,8 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
                           items: _states.map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value, style: TextStyle(fontSize: 16)),
+                              child:
+                                  Text(value, style: TextStyle(fontSize: 16)),
                             );
                           }).toList(),
                           onChanged: (newValue) {
@@ -163,7 +165,7 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text('Actualizar Estado'),
+                      child: const Text('Actualizar estado'),
                     ),
                   ],
                 ),
@@ -184,7 +186,8 @@ class _TurnoDetailsScreenState extends State<TurnoDetailsScreen> {
             children: [
               Text(
                 '$title:',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),

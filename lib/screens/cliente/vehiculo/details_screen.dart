@@ -49,7 +49,7 @@ class VehicleDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalles del Auto'),
+        title: const Text('Detalles del vehículo'),
       ),
       body: Center(
         child: Padding(
@@ -107,7 +107,7 @@ class VehicleDetailsScreen extends StatelessWidget {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: const Text('Confirmar Eliminación'),
+                                title: const Text('Confirmar eliminación'),
                                 content: const Text(
                                     '¿Estás seguro de que deseas eliminar este vehículo?'),
                                 actions: <Widget>[

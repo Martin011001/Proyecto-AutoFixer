@@ -42,7 +42,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Service Details'),
+        title: const Text('Detalles de servicio'),
       ),
       body: FutureBuilder<Service>(
         future: _fetchService(),

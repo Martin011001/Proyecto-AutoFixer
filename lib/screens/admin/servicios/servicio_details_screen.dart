@@ -111,7 +111,38 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                           ),
                           const SizedBox(width: 10),
                           ElevatedButton(
-                            onPressed: () => eliminarServicio(context),
+                            onPressed: () async {
+                              // Mostrar diálogo de confirmación
+                              bool confirmacion = await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Confirmar eliminación'),
+                                    content: const Text(
+                                        '¿Estás seguro que deseas eliminar este servicio?'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(false);
+                                        },
+                                        child: const Text('Cancelar'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(true);
+                                        },
+                                        child: const Text('Eliminar'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+
+                              if (confirmacion) {
+                                // ignore: use_build_context_synchronously
+                                await eliminarServicio(context);
+                              }
+                            },
                             child: const Text('Eliminar'),
                           ),
                         ],

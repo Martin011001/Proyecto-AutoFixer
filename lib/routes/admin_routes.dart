@@ -1,4 +1,3 @@
-
 import 'package:go_router/go_router.dart';
 import 'package:aplicacion_taller/entities/user.dart';
 import 'package:aplicacion_taller/entities/turn.dart';
@@ -7,7 +6,7 @@ import 'package:aplicacion_taller/screens/admin/servicios/add_services_screen.da
 import 'package:aplicacion_taller/screens/admin/home_screen.dart';
 import 'package:aplicacion_taller/screens/admin/perfiles/home_screen.dart';
 import 'package:aplicacion_taller/screens/admin/perfiles/profile_screen.dart';
-import 'package:aplicacion_taller/screens/admin/servicios/_servicios_screen.dart';
+import 'package:aplicacion_taller/screens/admin/servicios/servicio_list_screen.dart';
 import 'package:aplicacion_taller/screens/admin/turnos/turnos_list_screen.dart';
 import 'package:aplicacion_taller/screens/admin/config/business_hours_screen.dart';
 

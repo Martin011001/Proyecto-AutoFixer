@@ -1,4 +1,5 @@
 
+import 'package:aplicacion_taller/screens/admin/metricas/metricas_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:aplicacion_taller/entities/user.dart';
 import 'package:aplicacion_taller/entities/turn.dart';
@@ -36,10 +37,10 @@ final adminRoutes = [
     path: '/administrador/servicios',
     builder: (context, state) => const ServiciosScreen(),
   ),
-  //GoRoute(
-  //  path: '/administrador/metricas',
-  //  builder: (context, state) => const MetricasScreen(),
-  //),
+  GoRoute(
+    path: '/administrador/metricas',
+    builder: (context, state) => const MetricasScreen(),
+  ),
   // GoRoute(
   //   path: '/administrador/servicios-detail',
   //   builder: (context, state) => ServicieDetailScreen(service: state.extra as Service),

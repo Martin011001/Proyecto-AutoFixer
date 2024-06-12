@@ -109,7 +109,7 @@ class VehicleDetailsScreen extends StatelessWidget {
                               return AlertDialog(
                                 title: const Text('Confirmar eliminación'),
                                 content: const Text(
-                                    '¿Estás seguro de que deseas eliminar este vehículo?'),
+                                    '¿Estás seguro que deseas eliminar este vehículo?'),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () {

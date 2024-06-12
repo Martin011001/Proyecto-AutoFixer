@@ -33,11 +33,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _deleteVehicle(BuildContext context, String vehicleId) async {
     try {
       await FirebaseFirestore.instance.runTransaction((transaction) async {
-        DocumentReference vehicleRef = FirebaseFirestore.instance.collection('vehiculos').doc(vehicleId);
+        DocumentReference vehicleRef =
+            FirebaseFirestore.instance.collection('vehiculos').doc(vehicleId);
         transaction.delete(vehicleRef);
 
-        QuerySnapshot turnosSnapshot = await FirebaseFirestore.instance.collection('turns')
-            .where('vehicleId', isEqualTo: vehicleId).get();
+        QuerySnapshot turnosSnapshot = await FirebaseFirestore.instance
+            .collection('turns')
+            .where('vehicleId', isEqualTo: vehicleId)
+            .get();
         for (DocumentSnapshot turnoDoc in turnosSnapshot.docs) {
           transaction.delete(turnoDoc.reference);
         }
@@ -66,8 +69,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _editUserInfo(BuildContext context) {
-    final TextEditingController nameController = TextEditingController(text: user.name);
-    final TextEditingController phoneController = TextEditingController(text: user.phone);
+    final TextEditingController nameController =
+        TextEditingController(text: user.name);
+    final TextEditingController phoneController =
+        TextEditingController(text: user.phone);
 
     showDialog(
       context: context,
@@ -105,8 +110,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 TextButton(
                   onPressed: () async {
                     setState(() {
-                      _nameError = nameController.text.isEmpty ? 'El nombre no puede estar vacío' : null;
-                      _phoneError = phoneController.text.isEmpty || !RegExp(r'^\d+$').hasMatch(phoneController.text) || phoneController.text.length < 8
+                      _nameError = nameController.text.isEmpty
+                          ? 'El nombre no puede estar vacío'
+                          : null;
+                      _phoneError = phoneController.text.isEmpty ||
+                              !RegExp(r'^\d+$')
+                                  .hasMatch(phoneController.text) ||
+                              phoneController.text.length < 8
                           ? 'El teléfono debe ser numerico y de aunque sea 8 digitos'
                           : null;
                     });
@@ -115,7 +125,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       return;
                     }
 
-                    await FirebaseFirestore.instance.collection('users').doc(user.id).update({
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user.id)
+                        .update({
                       'name': nameController.text,
                       'phone': phoneController.text,
                     });
@@ -141,10 +154,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _editVehicle(BuildContext context, Vehicle vehicle) {
-    final TextEditingController modelController = TextEditingController(text: vehicle.model);
-    final TextEditingController brandController = TextEditingController(text: vehicle.brand);
-    final TextEditingController licensePlateController = TextEditingController(text: vehicle.licensePlate);
-    final TextEditingController yearController = TextEditingController(text: vehicle.year ?? '');
+    final TextEditingController modelController =
+        TextEditingController(text: vehicle.model);
+    final TextEditingController brandController =
+        TextEditingController(text: vehicle.brand);
+    final TextEditingController licensePlateController =
+        TextEditingController(text: vehicle.licensePlate);
+    final TextEditingController yearController =
+        TextEditingController(text: vehicle.year ?? '');
 
     showDialog(
       context: context,
@@ -198,26 +215,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 TextButton(
                   onPressed: () async {
                     setState(() {
-                      _modelError = modelController.text.isEmpty || modelController.text.length < 3 ? 'El modelo debe tener aunque 3 caracteres' : null;
-                      _brandError = brandController.text.isEmpty || brandController.text.length < 3 ? 'La marca debe tener aunque 3 caracteres' : null;
-                      _licensePlateError = licensePlateController.text.isEmpty || !RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$').hasMatch(licensePlateController.text)
+                      _modelError = modelController.text.isEmpty ||
+                              modelController.text.length < 3
+                          ? 'El modelo debe tener aunque 3 caracteres'
+                          : null;
+                      _brandError = brandController.text.isEmpty ||
+                              brandController.text.length < 3
+                          ? 'La marca debe tener aunque 3 caracteres'
+                          : null;
+                      _licensePlateError = licensePlateController
+                                  .text.isEmpty ||
+                              !RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$')
+                                  .hasMatch(licensePlateController.text)
                           ? 'Ingrese una patente válida (Ejemplo: AA123BB o ACB123)'
                           : null;
-                      _yearError = yearController.text.isNotEmpty && !RegExp(r'^\d{4}$').hasMatch(yearController.text)
+                      _yearError = yearController.text.isNotEmpty &&
+                              !RegExp(r'^\d{4}$').hasMatch(yearController.text)
                           ? 'Ingrese un año válido (entre 1900 y el año actual)'
                           : null;
                     });
 
-                    if (_modelError != null || _brandError != null || _licensePlateError != null || _yearError != null) {
+                    if (_modelError != null ||
+                        _brandError != null ||
+                        _licensePlateError != null ||
+                        _yearError != null) {
                       return;
                     }
 
                     try {
-                      await FirebaseFirestore.instance.collection('vehiculos').doc(vehicle.id).update({
+                      await FirebaseFirestore.instance
+                          .collection('vehiculos')
+                          .doc(vehicle.id)
+                          .update({
                         'model': modelController.text,
                         'brand': brandController.text,
                         'licensePlate': licensePlateController.text,
-                        'year': yearController.text.isEmpty ? null : yearController.text,
+                        'year': yearController.text.isEmpty
+                            ? null
+                            : yearController.text,
                       });
 
                       setState(() {
@@ -241,7 +276,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _addVehicle(BuildContext context) {
     final TextEditingController modelController = TextEditingController();
     final TextEditingController brandController = TextEditingController();
-    final TextEditingController licensePlateController = TextEditingController();
+    final TextEditingController licensePlateController =
+        TextEditingController();
     final TextEditingController yearController = TextEditingController();
 
     showDialog(
@@ -296,27 +332,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 TextButton(
                   onPressed: () async {
                     setState(() {
-                      _modelError = modelController.text.isEmpty || modelController.text.length < 3 ? 'El modelo debe tener 3 caracteres' : null;
-                      _brandError = brandController.text.isEmpty || brandController.text.length < 3 ? 'La marca debe tener 3 caracteres' : null;
-                      _licensePlateError = licensePlateController.text.isEmpty || !RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$').hasMatch(licensePlateController.text)
+                      _modelError = modelController.text.isEmpty ||
+                              modelController.text.length < 3
+                          ? 'El modelo debe tener 3 caracteres'
+                          : null;
+                      _brandError = brandController.text.isEmpty ||
+                              brandController.text.length < 3
+                          ? 'La marca debe tener 3 caracteres'
+                          : null;
+                      _licensePlateError = licensePlateController
+                                  .text.isEmpty ||
+                              !RegExp(r'^([A-Z]{2}\d{3}[A-Z]{2}|[A-Z]{3}\d{3})$')
+                                  .hasMatch(licensePlateController.text)
                           ? 'Ingrese un año válido (entre 1900 y el año actual)'
                           : null;
-                      _yearError = yearController.text.isNotEmpty && !RegExp(r'^\d{4}$').hasMatch(yearController.text)
+                      _yearError = yearController.text.isNotEmpty &&
+                              !RegExp(r'^\d{4}$').hasMatch(yearController.text)
                           ? 'Ingrese un año válido (entre 1900 y el año actual)'
                           : null;
                     });
 
-                    if (_modelError != null || _brandError != null || _licensePlateError != null || _yearError != null) {
+                    if (_modelError != null ||
+                        _brandError != null ||
+                        _licensePlateError != null ||
+                        _yearError != null) {
                       return;
                     }
 
                     try {
-                      await FirebaseFirestore.instance.collection('vehiculos').add({
+                      await FirebaseFirestore.instance
+                          .collection('vehiculos')
+                          .add({
                         'model': modelController.text,
                         'brand': brandController.text,
                         'licensePlate': licensePlateController.text,
                         'userID': user.id,
-                        'year': yearController.text.isEmpty ? null : yearController.text,
+                        'year': yearController.text.isEmpty
+                            ? null
+                            : yearController.text,
                       });
 
                       setState(() {
@@ -374,11 +427,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   future: _vehiclesFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(heightFactor: 2, child: CircularProgressIndicator());
+                      return const Center(
+                          heightFactor: 2, child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
-                      return const Center(heightFactor: 2, child: Text('Error al obtener los vehículos'));
+                      return const Center(
+                          heightFactor: 2,
+                          child: Text('Error al obtener los vehículos'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(heightFactor: 2, child: Text('No se encontraron vehículos'));
+                      return const Center(
+                          heightFactor: 2,
+                          child: Text('No se encontraron vehículos'));
                     } else {
                       return ListView.builder(
                         shrinkWrap: true,
@@ -388,8 +446,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           return Card(
                             elevation: 4,
                             child: ListTile(
-                              title: Text('${vehicle.brand} ${vehicle.model} (${vehicle.year ?? 'N/A'})'),
-                              subtitle: Text('Matrícula: ${vehicle.licensePlate}'),
+                              title: Text(
+                                  '${vehicle.brand} ${vehicle.model} (${vehicle.year ?? 'N/A'})'),
+                              subtitle:
+                                  Text('Matrícula: ${vehicle.licensePlate}'),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -405,22 +465,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       bool? confirmDelete = await showDialog(
                                         context: context,
                                         builder: (context) => AlertDialog(
-                                          title: const Text('Eliminar vehículo'),
-                                          content: const Text('¿Estás seguro de que quieres eliminar este vehículo?'),
+                                          title:
+                                              const Text('Eliminar vehículo'),
+                                          content: const Text(
+                                              '¿Estás seguro que deseas eliminar este vehículo?'),
                                           actions: [
                                             TextButton(
-                                              onPressed: () => Navigator.of(context).pop(false),
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(false),
                                               child: const Text('Cancelar'),
                                             ),
                                             TextButton(
-                                              onPressed: () => Navigator.of(context).pop(true),
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(true),
                                               child: const Text('Eliminar'),
                                             ),
                                           ],
                                         ),
                                       );
                                       if (confirmDelete == true) {
-                                        await _deleteVehicle(context, vehicle.id);
+                                        await _deleteVehicle(
+                                            context, vehicle.id);
                                         setState(() {});
                                       }
                                     },

@@ -43,3 +43,6 @@ app.*.map.json
 
 # VSCode personal config
 .vscode/settings.json
+
+# Build
+build/

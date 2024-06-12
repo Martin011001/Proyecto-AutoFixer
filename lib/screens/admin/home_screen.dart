@@ -5,11 +5,10 @@ import 'package:aplicacion_taller/widgets/navigation_button.dart';
 class AdminHomeScreen extends StatelessWidget {
   const AdminHomeScreen({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return const HomeScreenBase(
-      title: 'Inicio: Admin',
+      title: 'AutoFixer (Admin)',
       buttons: [
         NavigationButton(
           text: 'Turnos',

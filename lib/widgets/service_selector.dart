@@ -62,7 +62,7 @@ class _ServiceSelectorState extends State<ServiceSelector> {
                     Column(
                       children: [
                         Text(
-                          '${service.diasAproximados} dia(s)',
+                          '${service.diasAproximados} ${service.diasAproximados == 1 ? 'día' : 'días'}',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(

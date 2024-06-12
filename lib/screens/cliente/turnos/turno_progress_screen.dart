@@ -26,7 +26,7 @@ class VerProgresoReparaciones extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Progreso del Turno'),
+        title: const Text('Progreso del turno'),
       ),
       body: Center(
         child: Padding(

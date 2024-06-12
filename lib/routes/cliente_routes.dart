@@ -7,7 +7,7 @@ import 'package:aplicacion_taller/screens/cliente/home_screen.dart';
 import 'package:aplicacion_taller/screens/cliente/turnos/turno_history_screen.dart';
 import 'package:aplicacion_taller/screens/cliente/vehiculo/list_screen.dart';
 import 'package:aplicacion_taller/screens/cliente/vehiculo/register_screen.dart';
-import 'package:aplicacion_taller/screens/cliente/vehiculo/details_screen.dart';
+import 'package:aplicacion_taller/screens/cliente/vehiculo/vehiculo_details_screen.dart';
 import 'package:aplicacion_taller/screens/cliente/vehiculo/edit_screen.dart';
 
 import 'package:aplicacion_taller/screens/cliente/turnos/turno_create_screen.dart';

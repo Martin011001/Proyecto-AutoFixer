@@ -14,7 +14,7 @@ class ReparationHistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mis Reparaciones'),
+        title: const Text('Mis reparaciones'),
       ),
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -114,17 +114,17 @@ class _ListTurnView extends StatelessWidget {
 Icon _getStateIcon(String state) {
   switch (state) {
     case 'Pendiente':
-      return const Icon(Icons.pending, color: Colors.orange);
+      return const Icon(Icons.pending, color: Colors.orange, size: 48);
     case 'Confirmado':
-      return const Icon(Icons.check_circle, color: Colors.green);
+      return const Icon(Icons.check_circle, color: Colors.green, size: 48);
     case 'En Progreso':
-      return const Icon(Icons.autorenew, color: Colors.blue);
+      return const Icon(Icons.autorenew, color: Colors.blue, size: 48);
     case 'Realizado':
-      return const Icon(Icons.done, color: Colors.purple);
+      return const Icon(Icons.done, color: Colors.purple, size: 48);
     case 'Cancelado':
-      return const Icon(Icons.cancel, color: Colors.red);
+      return const Icon(Icons.cancel, color: Colors.red, size: 48);
     default:
-      return const Icon(Icons.help, color: Colors.grey);
+      return const Icon(Icons.help, color: Colors.grey, size: 48);
   }
 }
 
@@ -171,8 +171,8 @@ class _TurnItem extends StatelessWidget {
 
             return Card(
               child: ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
@@ -182,9 +182,18 @@ class _TurnItem extends StatelessWidget {
                         Text('$vehicleBrand $vehicleModel'),
                       ],
                     ),
-                    _getStateIcon(turn.state),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Ingreso: ${turn.ingreso.toString().split('.')[0]}',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                    Text(
+                      'Egreso: ${turn.egreso.toString().split('.')[0]}',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                   ],
                 ),
+                trailing: _getStateIcon(turn.state),
                 onTap: () {
                   context.push('/cliente/turn-progress',
                       extra: TurnDetails(

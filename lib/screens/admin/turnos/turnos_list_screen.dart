@@ -14,12 +14,12 @@ class TurnosListScreen extends StatefulWidget {
 class _TurnosListScreenState extends State<TurnosListScreen> {
   TurnState? selectedState;
   final List<TurnState> states = [
-    TurnState('Todos', 'Todos los Turnos', Icons.all_inclusive),
-    TurnState('Pendiente', 'Turnos Pendientes', Icons.access_time),
-    TurnState('Confirmado', 'Turnos Confirmados', Icons.check_circle),
-    TurnState('En Progreso', 'Turnos en Progreso', Icons.hourglass_bottom),
-    TurnState('Realizado', 'Turnos Completados', Icons.done),
-    TurnState('Cancelado', 'Turnos Cancelados', Icons.cancel),
+    TurnState('Todos', 'Todos los turnos', Icons.all_inclusive),
+    TurnState('Pendiente', 'Turnos pendientes', Icons.access_time),
+    TurnState('Confirmado', 'Turnos confirmados', Icons.check_circle),
+    TurnState('En Progreso', 'Turnos en progreso', Icons.hourglass_bottom),
+    TurnState('Realizado', 'Turnos completados', Icons.done),
+    TurnState('Cancelado', 'Turnos cancelados', Icons.cancel),
   ];
   List<Turn> allTurns = [];
   bool isLoading = true;
@@ -68,11 +68,13 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
       bool withinEgresoDates = true;
 
       if (useIngresoFilter && startDate != null && endDate != null) {
-        withinIngresoDates = turn.ingreso.isAfter(startDate!) && turn.ingreso.isBefore(endDate!);
+        withinIngresoDates =
+            turn.ingreso.isAfter(startDate!) && turn.ingreso.isBefore(endDate!);
       }
 
       if (useEgresoFilter && egresoStartDate != null && egresoEndDate != null) {
-        withinEgresoDates = turn.egreso.isAfter(egresoStartDate!) && turn.egreso.isBefore(egresoEndDate!);
+        withinEgresoDates = turn.egreso.isAfter(egresoStartDate!) &&
+            turn.egreso.isBefore(egresoEndDate!);
       }
 
       return withinIngresoDates && withinEgresoDates;
@@ -136,7 +138,7 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
                         });
                       },
                     ),
-                    const Text('Usar Fecha de Ingreso para filtrar'),
+                    const Text('Usar fecha de ingreso para filtrar'),
                   ],
                 ),
                 if (useIngresoFilter) ...[
@@ -158,7 +160,7 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
                           }
                         },
                         child: Text(
-                          'Fecha de Ingreso: ${startDate != null ? DateFormat('dd/MM/yyyy').format(startDate!) : 'Seleccione'}',
+                          'Fecha de ingreso: ${startDate != null ? DateFormat('dd/MM/yyyy').format(startDate!) : 'Seleccione'}',
                           style: const TextStyle(fontSize: 12),
                         ),
                       ),
@@ -195,7 +197,7 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
                         });
                       },
                     ),
-                    const Text('Usar Fecha de Egreso para filtrar'),
+                    const Text('Usar fecha de egreso para filtrar'),
                   ],
                 ),
                 if (useEgresoFilter) ...[
@@ -250,8 +252,7 @@ class _TurnosListScreenState extends State<TurnosListScreen> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _ListTurnView(
-                    turns: filteredTurns, actualizadoPagina: _fetchTurns
-                  ),
+                    turns: filteredTurns, actualizadoPagina: _fetchTurns),
           ),
         ],
       ),
@@ -272,14 +273,16 @@ class _ListTurnView extends StatelessWidget {
   final Function actualizadoPagina;
 
   const _ListTurnView({
-    required this.turns, required this.actualizadoPagina,
+    required this.turns,
+    required this.actualizadoPagina,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        ...turns.map((turn) => TurnItem(turn: turn, actualizadoPagina: actualizadoPagina)),
+        ...turns.map((turn) =>
+            TurnItem(turn: turn, actualizadoPagina: actualizadoPagina)),
         if (turns.isNotEmpty) const Divider(),
       ],
     );

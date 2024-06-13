@@ -17,10 +17,21 @@ class MetricasScreen extends StatelessWidget {
         idToName[doc.id] = doc['name'];
       }
 
-      // Mapear campos de turno
-      List<Map<String, dynamic>> turnosMapeados = turnosSnapshot.docs.map((turnoDoc) {
+      // Mapear campos de turno y filtrar por estados permitidos
+      List<Map<String, dynamic>> turnosMapeados =
+          turnosSnapshot.docs.where((turnoDoc) {
+        final turnoData = turnoDoc.data() as Map<String, dynamic>;
+        final estado = turnoData['state'];
+
+        // Filtrar por los estados permitidos
+        return estado == 'Confirmado' ||
+            estado == 'En proceso' ||
+            estado == 'Realizado';
+      }).map((turnoDoc) {
+        final turnoData = turnoDoc.data() as Map<String, dynamic>;
+
         List<String> nombresServicios = [];
-        for (var idServicio in (turnoDoc['services'] as List)) {
+        for (var idServicio in (turnoData['services'] as List)) {
           if (idToName.containsKey(idServicio)) {
             nombresServicios.add(idToName[idServicio]!);
           }
@@ -28,11 +39,15 @@ class MetricasScreen extends StatelessWidget {
 
         return {
           'id': turnoDoc.id,
-          'ingreso': (turnoDoc['ingreso'] as Timestamp).toDate(),
-          'egreso': (turnoDoc['egreso'] as Timestamp).toDate(),
+          'ingreso': turnoData.containsKey('ingreso')
+              ? (turnoData['ingreso'] as Timestamp).toDate()
+              : null,
+          'egreso': turnoData.containsKey('egreso')
+              ? (turnoData['egreso'] as Timestamp).toDate()
+              : null,
           'services': nombresServicios,
-          'state': turnoDoc['state'] ?? '',
-          'totalPrice': (turnoDoc['totalPrice'] ?? 0).toDouble(),
+          'state': turnoData['state'] ?? '',
+          'totalPrice': (turnoData['totalPrice'] ?? 0).toDouble(),
         };
       }).toList();
 
@@ -43,7 +58,6 @@ class MetricasScreen extends StatelessWidget {
       return [];
     }
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -51,85 +65,176 @@ class MetricasScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Métricas'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          _buildSection(
-            title: 'Turnos',
-            metrics: [
-              {'label': 'Total de Turnos', 'value': '50'},
-              {'label': 'Turnos Confirmados', 'value': '30'},
-              {'label': 'Turnos Realizados', 'value': '20'},
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: obtenerTurnos(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return const Center(child: Text('Error al cargar datos'));
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No hay datos disponibles'));
+          }
+
+          // Obtén las métricas calculadas
+          final turnos = snapshot.data!;
+          final totalTurnos = turnos.length;
+          final turnosConfirmados =
+              turnos.where((t) => t['state'] == 'Confirmado').length;
+          final turnosRealizados =
+              turnos.where((t) => t['state'] == 'Realizado').length;
+          final totalServicios =
+              turnos.expand((t) => t['services'] as List<String>).length;
+          final totalIngresos =
+              turnos.fold(0.0, (sum, turno) => sum + (turno['totalPrice'] as double));
+          final promedioIngresosPorServicio =
+              totalServicios > 0 ? totalIngresos / turnos.length : 0.0;
+
+          // Calcular tiempo promedio por servicio (en días)
+          double tiempoPromedioPorServicio = 0.0;
+          int cantidadTurnosRealizados = 0;
+
+          for (var turno in turnos) {
+            if (turno['state'] == 'Realizado' &&
+                turno['ingreso'] != null &&
+                turno['egreso'] != null) {
+              final DateTime ingreso = turno['ingreso'];
+              final DateTime egreso = turno['egreso'];
+              final int dias = egreso.difference(ingreso).inDays;
+              tiempoPromedioPorServicio += dias;
+              cantidadTurnosRealizados++;
+            }
+          }
+
+          tiempoPromedioPorServicio =
+              cantidadTurnosRealizados > 0 ? tiempoPromedioPorServicio / cantidadTurnosRealizados : 0.0;
+
+          return ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              _buildSection(
+                icon: Icons.event,
+                title: 'Turnos',
+                metrics: [
+                  {'label': 'Total de Turnos', 'value': totalTurnos.toString()},
+                  {
+                    'label': 'Turnos Confirmados',
+                    'value': turnosConfirmados.toString()
+                  },
+                  {
+                    'label': 'Turnos Realizados',
+                    'value': turnosRealizados.toString()
+                  },
+                ],
+                customMetric: {
+                  'label': 'Turnos por fecha',
+                },
+                segundaMetrica: 'Turnos por estado',
+                opcionesSegundaMetrica: [
+                  'Confirmado',
+                  'En proceso',
+                  'Finalizado'
+                ],
+              ),
+              const SizedBox(height: 20),
+              const Divider(),
+              const SizedBox(height: 20),
+              _buildSection(
+                icon: Icons.assignment,
+                title: 'Servicios',
+                metrics: [
+                  {
+                    'label': 'Tiempo Prom. Turnos (días)',
+                    'value': tiempoPromedioPorServicio.toStringAsFixed(2)
+                  },
+                  {
+                    'label': 'Total de Servicios Realiz.',
+                    'value': totalServicios.toString()
+                  },
+                ],
+                customMetric: {'label': 'Servicios por fecha'},
+                segundaMetrica: 'Tipo de Servicio',
+                opcionesSegundaMetrica: ['Pulido', 'Chapa', 'Tapizado'],
+              ),
+              const SizedBox(height: 20),
+              const Divider(),
+              const SizedBox(height: 20),
+              _buildSection(
+                icon: Icons.attach_money,
+                title: 'Ingresos',
+                metrics: [
+                  {
+                    'label': 'Ingresos Totales',
+                    'value': '\$${totalIngresos.toStringAsFixed(2)}'
+                  },
+                  {
+                    'label': 'Prom. Ingresos por servicio',
+                    'value':
+                        '\$${promedioIngresosPorServicio.toStringAsFixed(2)}'
+                  },
+                ],
+                customMetric: {'label': 'Ingresos por fecha'},
+                segundaMetrica: 'Servicio',
+                opcionesSegundaMetrica: ['Pulido', 'Chapa', 'Tapizado'],
+              ),
             ],
-            customMetric: {
-              'label': 'Turnos por fecha',
-            },
-            segundaMetrica: 'Turnos por estado',
-            opcionesSegundaMetrica: ['Confirmado', 'En proceso', 'Finalizado'],
-          ),
-          const SizedBox(height: 20),
-          const Divider(),
-          const SizedBox(height: 20),
-          _buildSection(
-            title: 'Servicios',
-            metrics: [
-              {'label': 'Tiempo Total de Servicio (horas)', 'value': '150'},
-              {'label': 'Tiempo Promedio de Servicio (horas)', 'value': '5'},
-              {'label': 'Total de Servicios', 'value': '30'},
-            ],
-            customMetric: {
-              'label': 'Servicios por fecha'
-            },
-            segundaMetrica: 'Tipo de Servicio',
-            opcionesSegundaMetrica: ['Pulido', 'Chapa', 'Tapizado'],
-          ),
-          const SizedBox(height: 20),
-          const Divider(),
-          const SizedBox(height: 20),
-          _buildSection(
-            title: 'Ingresos',
-            metrics: [
-              {'label': 'Ingresos Totales', 'value': '\$1500'},
-              {'label': 'Promedio de Ingresos por Turno', 'value': '\$30'},
-              {'label': 'Total de Turnos', 'value': '50'},
-            ],
-            customMetric: {
-              'label': 'Ingresos por fecha'
-            },
-            segundaMetrica: 'Servicio',
-            opcionesSegundaMetrica: ['Pulido', 'Chapa', 'Tapizado'],
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildSection(
-      {required String title,
-      required List<Map<String, String>> metrics,
-      required Map<String, String> customMetric,
-      required String segundaMetrica,
-      required List<String> opcionesSegundaMetrica}) {
+  Widget _buildSection({
+    required IconData icon,
+    required String title,
+    required List<Map<String, String>> metrics,
+    required Map<String, String> customMetric,
+    required String segundaMetrica,
+    required List<String> opcionesSegundaMetrica,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-        for (var metric in metrics)
-          Card(
-            child: ListTile(
-              title: Text(metric['label']!),
-              trailing: Text(metric['value']!),
+        Row(
+          children: [
+            Icon(icon, size: 32),
+            SizedBox(width: 10),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Column(
+          children: metrics
+              .map((metric) => Card(
+                    child: ListTile(
+                      title: Text(metric['label']!),
+                      trailing: Text(
+                        metric['value']!,
+                        style: const TextStyle(
+                          fontSize: 15, // Tamaño de fuente más grande
+                          fontWeight: FontWeight.bold, // Texto en negrita
+                        ),
+                      ),
+                    ),
+                  ))
+              .toList(),
+        ),
         const SizedBox(height: 20),
-        _buildCustomizableMetricCard(customMetric, segundaMetrica, opcionesSegundaMetrica),
+        _buildCustomizableMetricCard(
+            customMetric, segundaMetrica, opcionesSegundaMetrica),
       ],
     );
   }
 
-  Widget _buildCustomizableMetricCard(Map<String, String> customMetric, String segundaMetrica, List<String> opcionesSegundaMetrica) {
+  Widget _buildCustomizableMetricCard(
+      Map<String, String> customMetric,
+      String segundaMetrica,
+      List<String> opcionesSegundaMetrica) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -163,8 +268,7 @@ class MetricasScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(segundaMetrica),
-                DropdownButton<String>(
-                  items: opcionesSegundaMetrica.map((String value) {
+                DropdownButton<String>(                  items: opcionesSegundaMetrica.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -183,3 +287,5 @@ class MetricasScreen extends StatelessWidget {
     );
   }
 }
+
+

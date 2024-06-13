@@ -7,7 +7,7 @@ import 'package:aplicacion_taller/entities/turn.dart';
 class TurnoDetailsScreen extends StatefulWidget {
   final Turn turn;
 
-  const TurnoDetailsScreen({Key? key, required this.turn}) : super(key: key);
+  const TurnoDetailsScreen({super.key, required this.turn});
 
   @override
   _TurnoDetailsScreenState createState() => _TurnoDetailsScreenState();

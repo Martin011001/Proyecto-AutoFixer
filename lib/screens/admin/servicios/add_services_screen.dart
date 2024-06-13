@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddServiceScreen extends StatefulWidget {
+  const AddServiceScreen({super.key});
+
   @override
   _AddServiceScreenState createState() => _AddServiceScreenState();
 }

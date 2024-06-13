@@ -15,6 +15,7 @@ class HomeScreenBase extends StatelessWidget {
 
   Future<void> _logout(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
+    // ignore: use_build_context_synchronously
     context.go('/');
   }
 

@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 class ServiceDetailScreen extends StatefulWidget {
   final String serviceId;
 
-  ServiceDetailScreen({required this.serviceId});
+  const ServiceDetailScreen({required this.serviceId});
 
   @override
   _ServiceDetailScreenState createState() => _ServiceDetailScreenState();

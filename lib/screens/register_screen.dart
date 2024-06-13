@@ -68,6 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     try {
+      // ignore: deprecated_member_use
       final existingUser = await _auth.fetchSignInMethodsForEmail(_emailController.text);
       if (existingUser.isNotEmpty) {
         setState(() {

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class SpacedColumn extends StatelessWidget {
   final List<Widget> children;
 
-  const SpacedColumn({Key? key, required this.children}) : super(key: key);
+  const SpacedColumn({super.key, required this.children});
 
   @override
   Widget build(BuildContext context) {

@@ -6,7 +6,7 @@ import 'package:aplicacion_taller/entities/vehicle.dart';
 class ProfileScreen extends StatefulWidget {
   final User user;
 
-  const ProfileScreen({Key? key, required this.user}) : super(key: key);
+  const ProfileScreen({super.key, required this.user});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();

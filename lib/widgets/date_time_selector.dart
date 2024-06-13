@@ -7,10 +7,10 @@ class DateTimeSelector extends StatefulWidget {
   final ValueChanged<String?> onTimeSelected;
 
   const DateTimeSelector({
-    Key? key,
+    super.key,
     required this.onDateSelected,
     required this.onTimeSelected,
-  }) : super(key: key);
+  });
 
   @override
   _DateTimeSelectorState createState() => _DateTimeSelectorState();

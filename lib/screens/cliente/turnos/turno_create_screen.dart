@@ -81,7 +81,7 @@ class _TurnCreateState extends State<TurnCreate> {
 
       // Agregar días hábiles hasta alcanzar el total de días
       while (diasAgregados < totalDias) {
-        egresoEstimado = egresoEstimado.add(Duration(days: 1));
+        egresoEstimado = egresoEstimado.add(const Duration(days: 1));
 
         // Obtener el nombre del día de la semana en inglés
         String diaSemana = _getWeekdayName(egresoEstimado.weekday);

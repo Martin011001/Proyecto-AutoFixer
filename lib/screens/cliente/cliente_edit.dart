@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EditUserScreen extends StatefulWidget {
-  const EditUserScreen({Key? key}) : super(key: key);
+  const EditUserScreen({super.key});
 
   @override
   _EditUserScreenState createState() => _EditUserScreenState();
@@ -86,7 +86,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16.0),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Colors.black12,
                         blurRadius: 10.0,

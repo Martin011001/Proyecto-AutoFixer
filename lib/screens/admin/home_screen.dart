@@ -35,11 +35,11 @@ class AdminHomeScreen extends StatelessWidget {
           route: '/administrador/business-hours',
           icon: Icon(Icons.access_time, size: 90, color: Colors.black),
         ),
-        NavigationButton(
+        /* NavigationButton(
           text: 'Metricas',
           route: '/administrador/metricas',
           icon: Icon(Icons.add_chart, size: 90, color: Colors.black),
-        ),
+        ), */
       ],
     );
   }

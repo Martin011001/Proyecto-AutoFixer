@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:aplicacion_taller/screens/admin/metricas/CustomCard.dart';
 
 class MetricasScreen extends StatelessWidget {
   const MetricasScreen({super.key});
@@ -225,67 +226,13 @@ class MetricasScreen extends StatelessWidget {
               .toList(),
         ),
         const SizedBox(height: 20),
-        _buildCustomizableMetricCard(
-            customMetric, segundaMetrica, opcionesSegundaMetrica),
+        // Aquí usamos CustomizableMetricCard para métricas personalizables
+        CustomizableMetricCard(
+          customMetricLabel: customMetric['label']!,
+          segundaMetrica: segundaMetrica,
+          opcionesSegundaMetrica: opcionesSegundaMetrica,
+        ),
       ],
     );
   }
-
-  Widget _buildCustomizableMetricCard(
-      Map<String, String> customMetric,
-      String segundaMetrica,
-      List<String> opcionesSegundaMetrica) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              customMetric['label']!,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Fecha'),
-                DropdownButton<String>(
-                  items: const ['Día', 'Semana', 'Mes'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? value) {
-                    // Actualizar métrica según selección
-                  },
-                  hint: const Text('Seleccionar'),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(segundaMetrica),
-                DropdownButton<String>(                  items: opcionesSegundaMetrica.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? value) {
-                    // Actualizar métrica según selección
-                  },
-                  hint: const Text('Seleccionar'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
-
-

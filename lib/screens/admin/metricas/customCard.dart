@@ -1,3 +1,4 @@
+import 'package:aplicacion_taller/screens/admin/metricas/customcard.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -161,21 +162,8 @@ class MetricasScreen extends StatelessWidget {
               const SizedBox(height: 20),
               const Divider(),
               const SizedBox(height: 20),
-              _buildSection(
-                icon: Icons.attach_money,
-                title: 'Ingresos',
-                metrics: [
-                  {
-                    'label': 'Ingresos Totales',
-                    'value': '\$${totalIngresos.toStringAsFixed(2)}'
-                  },
-                  {
-                    'label': 'Prom. Ingresos por servicio',
-                    'value':
-                        '\$${promedioIngresosPorServicio.toStringAsFixed(2)}'
-                  },
-                ],
-                customMetric: {'label': 'Ingresos por fecha'},
+              const CustomizableMetricCard(
+                customMetricLabel: 'Ingresos por fecha',
                 segundaMetrica: 'Servicio',
                 opcionesSegundaMetrica: ['Pulido', 'Chapa', 'Tapizado'],
               ),
@@ -225,67 +213,13 @@ class MetricasScreen extends StatelessWidget {
               .toList(),
         ),
         const SizedBox(height: 20),
-        _buildCustomizableMetricCard(
-            customMetric, segundaMetrica, opcionesSegundaMetrica),
+        // Aquí solía estar la sección de ingresos, ahora usamos CustomizableMetricCard
+        CustomizableMetricCard(
+          customMetricLabel: customMetric['label']!,
+          segundaMetrica: segundaMetrica,
+          opcionesSegundaMetrica: opcionesSegundaMetrica,
+        ),
       ],
     );
   }
-
-  Widget _buildCustomizableMetricCard(
-      Map<String, String> customMetric,
-      String segundaMetrica,
-      List<String> opcionesSegundaMetrica) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              customMetric['label']!,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Fecha'),
-                DropdownButton<String>(
-                  items: const ['Día', 'Semana', 'Mes'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? value) {
-                    // Actualizar métrica según selección
-                  },
-                  hint: const Text('Seleccionar'),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(segundaMetrica),
-                DropdownButton<String>(                  items: opcionesSegundaMetrica.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? value) {
-                    // Actualizar métrica según selección
-                  },
-                  hint: const Text('Seleccionar'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
-
-

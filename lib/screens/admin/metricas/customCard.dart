@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class CustomizableMetricCard extends StatefulWidget {
   const CustomizableMetricCard({
-    Key? key,
+    super.key,
     required this.customMetricLabel,
     required this.segundaMetrica,
     required this.opcionesSegundaMetrica,
-  }) : super(key: key);
+  });
 
   final String customMetricLabel;
   final String segundaMetrica;

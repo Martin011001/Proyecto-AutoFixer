@@ -38,7 +38,7 @@ final adminRoutes = [
   ),
   GoRoute(
     path: '/administrador/metricas',
-    builder: (context, state) => const MetricasScreen(),
+    builder: (context, state) => MetricasScreen(),
   ),
   // GoRoute(
   //   path: '/administrador/servicios-detail',

@@ -3,7 +3,6 @@ import 'package:aplicacion_taller/entities/user.dart';
 import 'package:aplicacion_taller/screens/admin/turnos/turnos_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class TurnItem extends StatelessWidget {

@@ -1,4 +1,3 @@
-import 'package:aplicacion_taller/entities/info_cliente_turn_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

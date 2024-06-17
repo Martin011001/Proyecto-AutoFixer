@@ -6,7 +6,6 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _LoginScreenState createState() => _LoginScreenState();
 }
 
@@ -16,18 +15,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String _errorMessage = '';
 
-
   Future<void> _login() async {
     try {
-       setState(() {
-      
+      setState(() {
         _errorMessage = '';
       });
-      if (_emailController.text.isEmpty ||
-          _passwordController.text.isEmpty) {
+      if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
         setState(() {
           _errorMessage = 'Por favor llena los campos';
-
         });
         return;
       }
@@ -35,7 +30,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(_emailController.text)) {
         setState(() {
           _errorMessage = 'Email invalido';
-
         });
         return;
       }
@@ -43,10 +37,10 @@ class _LoginScreenState extends State<LoginScreen> {
       if (_passwordController.text.length < 6) {
         setState(() {
           _errorMessage = 'La contraseña debe contener aunque sea 6 caracteres';
-
         });
         return;
       }
+
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
@@ -59,7 +53,24 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } on FirebaseAuthException catch (e) {
       setState(() {
-        _errorMessage = e.message ?? 'Ocurrio un error';
+        switch (e.code) {
+          case 'user-not-found':
+            _errorMessage = 'Usuario no encontrado';
+            break;
+          case 'wrong-password':
+            _errorMessage = 'Contraseña incorrecta';
+            break;
+          case 'invalid-email':
+            _errorMessage = 'Email invalido';
+            break;
+          default:
+            if (e.message != null && e.message!.contains('The supplied auth credential is incorrect, malformed or has expired')) {
+              _errorMessage = 'Credenciales incorrectas o mal formadas';
+            } else {
+              _errorMessage = 'Ocurrio un error: ${e.message}';
+            }
+            break;
+        }
       });
     }
   }

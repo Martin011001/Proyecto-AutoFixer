@@ -43,7 +43,7 @@ class ServiciosScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      // podria agregarse en el router
+                      // Podría agregarse en el router
                       builder: (context) =>
                           ServiceDetailScreen(serviceId: service.id),
                     ),
@@ -53,24 +53,31 @@ class ServiciosScreen extends StatelessWidget {
                   margin: const EdgeInsets.all(10.0),
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        Text(
-                          service.name,
-                          style: const TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                service.name,
+                                style: const TextStyle(
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                '\$${service.price.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        Text(
-                          '\$${service.price.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            color: Colors.grey,
-                          ),
-                        ),
+                        const Icon(Icons.build), // Icono de servicio
                       ],
                     ),
                   ),

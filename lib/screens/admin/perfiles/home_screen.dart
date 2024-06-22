@@ -13,8 +13,10 @@ class PerfilesScreen extends StatefulWidget {
 }
 
 class _PerfilesScreenState extends State<PerfilesScreen> {
-  final CollectionReference usersRef = FirebaseFirestore.instance.collection('users');
-  final CollectionReference vehiclesRef = FirebaseFirestore.instance.collection('vehiculos');
+  final CollectionReference usersRef =
+      FirebaseFirestore.instance.collection('users');
+  final CollectionReference vehiclesRef =
+      FirebaseFirestore.instance.collection('vehiculos');
   String searchText = '';
 
   @override
@@ -67,7 +69,8 @@ class _PerfilesScreenState extends State<PerfilesScreen> {
               if (vehicleSnapshot.hasError) {
                 print("Error: ${vehicleSnapshot.error}");
                 return Center(
-                    child: Text('Algo ha salido mal: ${vehicleSnapshot.error}'));
+                    child:
+                        Text('Algo ha salido mal: ${vehicleSnapshot.error}'));
               }
 
               if (vehicleSnapshot.connectionState == ConnectionState.waiting) {
@@ -80,11 +83,13 @@ class _PerfilesScreenState extends State<PerfilesScreen> {
 
               final filteredUsers = users.where((user) {
                 final userName = user.name.toLowerCase();
-                final userVehicles = vehicles.where((vehicle) => vehicle.userID == user.id);
+                final userVehicles =
+                    vehicles.where((vehicle) => vehicle.userID == user.id);
                 final vehicleMatch = userVehicles.any((vehicle) {
                   final brand = vehicle.brand.toLowerCase();
                   final model = vehicle.model.toLowerCase();
-                  return brand.contains(searchText) || model.contains(searchText);
+                  return brand.contains(searchText) ||
+                      model.contains(searchText);
                 });
                 return userName.contains(searchText) || vehicleMatch;
               }).toList();
@@ -94,13 +99,17 @@ class _PerfilesScreenState extends State<PerfilesScreen> {
                 itemBuilder: (context, index) {
                   final user = filteredUsers[index];
                   return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16.0),
                     child: ListTile(
                       title: Text(user.name),
                       subtitle: Text(user.phone),
+                      trailing:
+                          const Icon(Icons.person), // Icono de usuario a la derecha
                       onTap: () {
                         // Navigate to profile page using go_router
-                        context.push('/administrador/perfiles/profile', extra: user);
+                        context.push('/administrador/perfiles/profile',
+                            extra: user);
                       },
                     ),
                   );

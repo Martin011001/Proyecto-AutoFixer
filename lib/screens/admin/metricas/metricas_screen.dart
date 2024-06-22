@@ -159,8 +159,12 @@ class _FiltrosYMetricaState extends State<FiltrosYMetrica> {
         bool cumpleServicio = true;
 
         if (_fechaInicio != null && _fechaFin != null) {
-          cumpleFecha = (ingreso != null && ingreso.isAfter(_fechaInicio!) && ingreso.isBefore(_fechaFin!)) ||
-                        (egreso != null && egreso.isAfter(_fechaInicio!) && egreso.isBefore(_fechaFin!));
+          cumpleFecha = (ingreso != null &&
+                  ingreso.isAfter(_fechaInicio!) &&
+                  ingreso.isBefore(_fechaFin!)) ||
+              (egreso != null &&
+                  egreso.isAfter(_fechaInicio!) &&
+                  egreso.isBefore(_fechaFin!));
         }
 
         if (_selectedTipoServicio != null) {
@@ -221,44 +225,62 @@ class _FiltrosYMetricaState extends State<FiltrosYMetrica> {
         ExpansionTile(
           title: const Text('Filtros'),
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ElevatedButton(
-                  onPressed: () => _seleccionarFechaInicio(context),
-                  child: Text(_fechaInicio == null
-                      ? 'Fecha inicio'
-                      : DateFormat('dd/MM/yyyy').format(_fechaInicio!)),
+                SizedBox(
+                   width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => _seleccionarFechaInicio(context),
+                    child: Text(_fechaInicio == null
+                        ? 'Fecha inicio'
+                        : DateFormat('dd/MM/yyyy').format(_fechaInicio!)),
+                  ),
                 ),
-                ElevatedButton(
-                  onPressed: () => _seleccionarFechaFin(context),
-                  child: Text(_fechaFin == null
-                      ? 'Fecha fin'
-                      : DateFormat('dd/MM/yyyy').format(_fechaFin!)),
+                const SizedBox(height: 10),
+                SizedBox(
+                   width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => _seleccionarFechaFin(context),
+                    child: Text(_fechaFin == null
+                        ? 'Fecha fin'
+                        : DateFormat('dd/MM/yyyy').format(_fechaFin!)),
+                  ),
                 ),
               ],
             ),
-            DropdownButton<String>(
-              value: _selectedTipoServicio,
-              hint: const Text('Tipo de Servicio'),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedTipoServicio = newValue;
-                  _filtrarTurnos();
-                });
-              },
-              items: widget.servicios
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 15),
-            ElevatedButton(
-              onPressed: _borrarFiltros,
-              child: const Text('Borrar filtros'),
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      value: _selectedTipoServicio,
+                      hint: const Text('Tipo de Servicio'),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedTipoServicio = newValue;
+                          _filtrarTurnos();
+                        });
+                      },
+                      items: widget.servicios
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: _borrarFiltros,
+                    child: const Text('Borrar filtros'),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 15),
           ],
@@ -327,7 +349,8 @@ class _FiltrosYMetricaState extends State<FiltrosYMetrica> {
             leading: Icon(icon),
             title: Text(
               title,
-              style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              style:
+                  const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
           ),
           ...metrics.map(
@@ -335,7 +358,8 @@ class _FiltrosYMetricaState extends State<FiltrosYMetrica> {
               title: Text(metric['label']!),
               trailing: Text(
                 metric['value']!,
-                style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    fontSize: 16.0, fontWeight: FontWeight.bold),
               ),
             ),
           ),

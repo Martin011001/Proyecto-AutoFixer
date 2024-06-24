@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:aplicacion_taller/entities/user.dart';
-import 'package:aplicacion_taller/entities/vehicle.dart';
 
 class PerfilesScreen extends StatefulWidget {
   const PerfilesScreen({super.key});
@@ -36,7 +35,7 @@ class _PerfilesScreenState extends State<PerfilesScreen> {
                 });
               },
               decoration: InputDecoration(
-                hintText: 'Buscar por nombre, marca o modelo',
+                hintText: 'Buscar por nombre',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -77,21 +76,11 @@ class _PerfilesScreenState extends State<PerfilesScreen> {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              final vehicles = vehicleSnapshot.data!.docs
-                  .map((doc) => Vehicle.fromFirestore(doc))
-                  .toList();
-
+              
               final filteredUsers = users.where((user) {
                 final userName = user.name.toLowerCase();
-                final userVehicles =
-                    vehicles.where((vehicle) => vehicle.userID == user.id);
-                final vehicleMatch = userVehicles.any((vehicle) {
-                  final brand = vehicle.brand.toLowerCase();
-                  final model = vehicle.model.toLowerCase();
-                  return brand.contains(searchText) ||
-                      model.contains(searchText);
-                });
-                return userName.contains(searchText) || vehicleMatch;
+             
+                return userName.contains(searchText);
               }).toList();
 
               return ListView.builder(
